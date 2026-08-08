@@ -86,6 +86,63 @@ def first_h1(text):
     return m.group(1).strip() if m else None
 
 
+SLIDE_SPLIT = "<!--SLIDE-->"
+
+
+def build_deck(wdir, wnum, wtitle, asset_files):
+    """Student-visible slides: the ON SCREEN layer only.
+
+    SAY, INTERACTION and WATCH FOR are the instructor's script and never leave
+    the spec. Assets that do not exist yet are named, not faked.
+    """
+    spec = wdir / "02-slides.md"
+    if not spec.exists():
+        return None
+    body = spec.read_text()
+    chunks = re.split(r"^## Slide ", body, flags=re.M)[1:]
+    if not chunks:
+        return None
+
+    titles, screens, assets = [], [], []
+    for c in chunks:
+        head = c.split("\n", 1)[0].strip()
+        titles.append(re.sub(r"^\d+\s*·\s*", "", head))
+        m = re.search(r"\*\*ON SCREEN\*\*\s*\n(.*?)"
+                      r"(?=\n\*\*(?:ASSET|SAY|INTERACTION|WATCH FOR)\*\*|\n---)", c, re.S)
+        txt = (m.group(1).strip() if m else "")
+        txt = "\n".join(l[2:] if l.startswith("> ") else ("" if l.strip() == ">" else l)
+                        for l in txt.split("\n"))
+        screens.append(txt.strip())
+
+        tag = re.search(r"\*\*ASSET\*\*\s*·\s*`(\w+)`", c)
+        num = re.search(r"image prompt \*\*(\d+)\.(\d+)\*\*", c)
+        alt = re.search(r"\|\s*\*\*Alt text\*\*\s*\|(.*?)\|", c)
+        fn = None
+        if num:
+            want = f"{int(num.group(1)):02d}-{num.group(2)}-"
+            fn = next((a for a in asset_files if a.startswith(want)), None)
+        assets.append((tag.group(1) if tag else "NONE", fn,
+                       (alt.group(1).strip() if alt else "")))
+
+    html_chunks = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens)).split(SLIDE_SPLIT)
+    cards = []
+    for i, (title, frag) in enumerate(zip(titles, html_chunks)):
+        tag, fn, alt = assets[i]
+        media = ""
+        if fn:
+            media = (f'<div class="sfig"><img src="../assets/{html.escape(fn)}" '
+                     f'alt="{html.escape(alt)}" loading="lazy"></div>')
+        elif tag in ("FIND", "SHOW", "MAKE", "GENERATE"):
+            media = ('<p class="spend">Shown in class.</p>')
+        norm = lambda x: re.sub(r"[^a-z0-9]", "", x.lower())
+        first = re.search(r"<h[1-6][^>]*>(.*?)</h[1-6]>", frag, re.S)
+        dup = first and norm(re.sub(r"<[^>]+>", "", first.group(1))) == norm(title)
+        eyebrow = "" if dup else f'<h2>{html.escape(title)}</h2>'
+        cards.append(f'<section class="slide"><p class="sn">{i+1} / {len(titles)}</p>'
+                     f'{eyebrow}<div class="sbody">{frag}</div>{media}</section>')
+    return "\n".join(cards), len(titles)
+
+
 def parse_assets():
     """The course diagrams, grouped by the week their number belongs to."""
     adir = SRC / "assets"
@@ -264,6 +321,7 @@ def main():
     pub, weeks = collect()
     hours, standing = parse_review()
     assets = parse_assets()
+    asset_names = sorted(p.name for p in (SRC / 'assets').glob('*.svg')) if (SRC / 'assets').is_dir() else []
     adir = SRC / 'assets'
     if adir.is_dir():
         shutil.copytree(adir, DOCS / 'assets', dirs_exist_ok=True)
@@ -301,6 +359,24 @@ def main():
             write(out, page(title, crumb, f'<article class="doc">{md_to_html(text)}</article>', 1))
             cards.append((os.path.relpath(out, wdir.name), label, title))
             pages += 1
+
+        deck = build_deck(wdir, wnum, wtitle, asset_names)
+        if deck:
+            slides_html, nslides = deck
+            crumbd = (f'<nav class="crumb"><a href="../index.html">All weeks</a>'
+                      f'<span>/</span><a href="index.html">Week {wnum}</a>'
+                      f'<span>/</span><em>Slides</em></nav>')
+            dbody = (f'<h1>Week {wnum} slides<span class="sub">{html.escape(wtitle)}</span></h1>'
+                     f'<p class="rvnote">What was on screen in class. '
+                     f'Arrow keys or click to move.</p>'
+                     f'<div class="deck" id="deck" tabindex="0">{slides_html}</div>'
+                     f'<div class="dhud"><button type="button" id="prev">&larr; Back</button>'
+                     f'<span id="dcount"></span>'
+                     f'<button type="button" id="next">Next &rarr;</button></div>'
+                     f'{DECK_JS}')
+            write(f"{wdir.name}/slides.html", page(f"Week {wnum} slides", crumbd, dbody, 1))
+            pages += 1
+            cards.insert(0, ("slides.html", "Slides", f"{nslides} slides from class"))
 
         lis = "\n".join(
             f'<li><a href="{h}"><span class="kind">{html.escape(k)}</span>'
@@ -386,6 +462,33 @@ def main():
     print(f"source         : {COURSE_DIR}")
 
 
+DECK_JS = """
+<script>
+(function(){
+  var d=document.getElementById('deck');
+  if(!d) return;
+  var s=[].slice.call(d.querySelectorAll('.slide')), i=0,
+      c=document.getElementById('dcount');
+  function show(n){ i=Math.max(0,Math.min(s.length-1,n));
+    s.forEach(function(el,k){el.classList.toggle('on',k===i);});
+    c.textContent=(i+1)+' / '+s.length; }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '){show(i+1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'){show(i-1);e.preventDefault();}
+    else if(e.key==='Home'){show(0);e.preventDefault();}
+    else if(e.key==='End'){show(s.length-1);e.preventDefault();}});
+  d.addEventListener('click',function(){show(i+1);});
+  document.getElementById('next').addEventListener('click',function(e){e.stopPropagation();show(i+1);});
+  document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
+  var x=null;
+  d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
+  d.addEventListener('touchend',function(e){ if(x===null)return;
+    var dx=e.changedTouches[0].clientX-x; if(Math.abs(dx)>45) show(dx<0?i+1:i-1); x=null;},{passive:true});
+  show(0);
+})();
+</script>
+"""
+
 STYLE = """
 :root{
   --ground:#E9E6DE; --panel:#F2F0EA; --ink:#1A1D1F;
@@ -447,6 +550,29 @@ ul.weeks .c{white-space:nowrap}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
+.deck{border:1px solid var(--rule);background:var(--panel);
+  min-height:22rem;display:flex;cursor:pointer}
+.deck:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.deck .slide{display:none;width:100%;padding:clamp(1.2rem,4vw,2.4rem);flex-direction:column;gap:.5rem}
+.deck .slide.on{display:flex}
+.sn{font-size:.72rem;letter-spacing:.14em;color:var(--faint);margin:0;
+  font-variant-numeric:tabular-nums}
+.deck h2{font-size:1.05rem;margin:0;color:var(--accent);letter-spacing:-.005em}
+.sbody{font-size:1.05rem}
+.sbody h1{font-size:clamp(1.4rem,4vw,2rem);line-height:1.15;margin:.4rem 0 .6rem;letter-spacing:-.02em}
+.sbody h2,.sbody h3{font-size:1.15rem;margin:.8rem 0 .4rem;color:var(--ink)}
+.sbody p,.sbody li{max-width:56ch}
+.sbody ul,.sbody ol{padding-left:1.2rem;margin:.4rem 0}
+.sfig{margin-top:.8rem}
+.sfig img{display:block;width:100%;max-width:34rem;height:auto;
+  background:#E9E6DE;border:1px solid var(--rule)}
+.spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint);font-style:italic}
+.dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
+.dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
+  color:var(--ink);border:1px solid var(--rule);cursor:pointer}
+.dhud button:hover{border-color:var(--accent)}
+.dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
+
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
 .diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--faint);font-weight:400;margin:0 0 .5rem}

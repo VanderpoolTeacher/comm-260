@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 6 slides &middot; COMM 260</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../index.html"><b>COMM 260</b> <span>Introduction to Digital Media Production</span></a>
+</header>
+<main>
+<nav class="crumb"><a href="../index.html">All weeks</a><span>/</span><a href="index.html">Week 6</a><span>/</span><em>Slides</em></nav>
+<h1>Week 6 slides<span class="sub">Editing and sound design</span></h1><p class="rvnote">What was on screen in class. Arrow keys or click to move.</p><div class="deck" id="deck" tabindex="0"><section class="slide"><p class="sn">1 / 15</p><h2>Title</h2><div class="sbody"><h1 id="week-6--editing-and-sound-design">Week 6 — Editing and sound
+design</h1>
+<p>Last week you captured. This week you decide.</p>
+</div></section>
+<section class="slide"><p class="sn">2 / 15</p><h2>Last week&#x27;s open question</h2><div class="sbody">
+
+<h1 id="what-is-room-tone-for">What is room tone for?</h1>
+</div></section>
+<section class="slide"><p class="sn">3 / 15</p><h2>The join, unfilled</h2><div class="sbody">
+
+<p>Blank.</p>
+</div><p class="spend">Shown in class.</p></section>
+<section class="slide"><p class="sn">4 / 15</p><h2>The join, filled</h2><div class="sbody">
+
+<h1 id="that">That.</h1>
+</div><p class="spend">Shown in class.</p></section>
+<section class="slide"><p class="sn">5 / 15</p><h2>Outcomes</h2><div class="sbody">
+
+<h1 id="by-friday-you-can">By Friday you can</h1>
+<ol type="1">
+<li>Edit recorded speech for clarity <strong>without making it sound
+processed</strong></li>
+<li>Make a structural cut that changes how the piece lands, <strong>and
+say why</strong></li>
+<li>Balance music under speech at levels that serve both</li>
+<li>Demonstrate the improvement over your source by comparison</li>
+</ol>
+</div></section>
+<section class="slide"><p class="sn">6 / 15</p><h2>What is wrong with this?</h2><div class="sbody">
+
+<p>Blank.</p>
+</div><p class="spend">Shown in class.</p></section>
+<section class="slide"><p class="sn">7 / 15</p><div class="sbody">
+
+<h1 id="the-breaths-are-gone">The breaths are gone.</h1>
+<p>People breathe. Take out all the breathing and you have made a
+machine.</p>
+</div></section>
+<section class="slide"><p class="sn">8 / 15</p><h2>Clarity is not meaning</h2><div class="sbody">
+
+<h1 id="cutting-for-clarity--cutting-for-meaning">Cutting for clarity ≠
+cutting for meaning</h1>
+<p>Clarity removes what is in the way.</p>
+<p><strong>Meaning changes what the piece is about.</strong></p>
+</div></section>
+<section class="slide"><p class="sn">9 / 15</p><h2>Two orders</h2><div class="sbody">
+
+<p>Blank.</p>
+</div><p class="spend">Shown in class.</p></section>
+<section class="slide"><p class="sn">10 / 15</p><h2>And what did it cost?</h2><div class="sbody">
+
+<h1 id="what-did-it-cost">What did it cost?</h1>
+</div></section>
+<section class="slide"><p class="sn">11 / 15</p><h2>Hear the swirl</h2><div class="sbody">
+
+<p>Blank.</p>
+</div><p class="spend">Shown in class.</p></section>
+<section class="slide"><p class="sn">12 / 15</p><div class="sbody">
+
+<h1 id="the-fix-was-last-week">The fix was last week.</h1>
+<p>At the microphone.</p>
+<p><strong>Noise reduction is last, and least.</strong></p>
+</div></section>
+<section class="slide"><p class="sn">13 / 15</p><h2>Music</h2><div class="sbody">
+
+<h1 id="loud-enough-to-be-felt">Loud enough to be felt.</h1>
+<h1 id="quiet-enough-that-no-word-is-lost">Quiet enough that no word is
+lost.</h1>
+<p>There is no number. Listen — on headphones, then check it on
+speakers.</p>
+</div></section>
+<section class="slide"><p class="sn">14 / 15</p><h2>Submit both</h2><div class="sbody">
+
+<h1 id="you-submit-the-edit-and-the-raw">You submit the edit AND the
+raw.</h1>
+<p>So "better" is checkable, not asserted.</p>
+<p><strong>Module summative · 10% of your course grade</strong></p>
+</div></section>
+<section class="slide"><p class="sn">15 / 15</p><div class="sbody">
+
+<h1 id="this-is-week-13s-dry-run">This is week 13's dry run.</h1>
+<p>The final project's audio piece requires exactly this pairing.</p>
+<p><strong>Nobody should meet it for the first time in the final
+project.</strong></p>
+</div></section></div><div class="dhud"><button type="button" id="prev">&larr; Back</button><span id="dcount"></span><button type="button" id="next">Next &rarr;</button></div>
+<script>
+(function(){
+  var d=document.getElementById('deck');
+  if(!d) return;
+  var s=[].slice.call(d.querySelectorAll('.slide')), i=0,
+      c=document.getElementById('dcount');
+  function show(n){ i=Math.max(0,Math.min(s.length-1,n));
+    s.forEach(function(el,k){el.classList.toggle('on',k===i);});
+    c.textContent=(i+1)+' / '+s.length; }
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '){show(i+1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'){show(i-1);e.preventDefault();}
+    else if(e.key==='Home'){show(0);e.preventDefault();}
+    else if(e.key==='End'){show(s.length-1);e.preventDefault();}});
+  d.addEventListener('click',function(){show(i+1);});
+  document.getElementById('next').addEventListener('click',function(e){e.stopPropagation();show(i+1);});
+  document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
+  var x=null;
+  d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
+  d.addEventListener('touchend',function(e){ if(x===null)return;
+    var dx=e.changedTouches[0].clientX-x; if(Math.abs(dx)>45) show(dx<0?i+1:i-1); x=null;},{passive:true});
+  show(0);
+})();
+</script>
+
+</main>
+<footer>
+  <p>COMM 260 &middot; Introduction to Digital Media Production</p>
+  <p class="fine">Student materials, generated from course source.</p>
+</footer>
+</body>
+</html>

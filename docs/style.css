@@ -59,6 +59,29 @@ ul.weeks .c{white-space:nowrap}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
+.deck{border:1px solid var(--rule);background:var(--panel);
+  min-height:22rem;display:flex;cursor:pointer}
+.deck:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.deck .slide{display:none;width:100%;padding:clamp(1.2rem,4vw,2.4rem);flex-direction:column;gap:.5rem}
+.deck .slide.on{display:flex}
+.sn{font-size:.72rem;letter-spacing:.14em;color:var(--faint);margin:0;
+  font-variant-numeric:tabular-nums}
+.deck h2{font-size:1.05rem;margin:0;color:var(--accent);letter-spacing:-.005em}
+.sbody{font-size:1.05rem}
+.sbody h1{font-size:clamp(1.4rem,4vw,2rem);line-height:1.15;margin:.4rem 0 .6rem;letter-spacing:-.02em}
+.sbody h2,.sbody h3{font-size:1.15rem;margin:.8rem 0 .4rem;color:var(--ink)}
+.sbody p,.sbody li{max-width:56ch}
+.sbody ul,.sbody ol{padding-left:1.2rem;margin:.4rem 0}
+.sfig{margin-top:.8rem}
+.sfig img{display:block;width:100%;max-width:34rem;height:auto;
+  background:#E9E6DE;border:1px solid var(--rule)}
+.spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint);font-style:italic}
+.dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
+.dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
+  color:var(--ink);border:1px solid var(--rule);cursor:pointer}
+.dhud button:hover{border-color:var(--accent)}
+.dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
+
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
 .diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--faint);font-weight:400;margin:0 0 .5rem}
