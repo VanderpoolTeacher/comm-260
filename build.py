@@ -286,14 +286,9 @@ def main():
 
         rd, vw = hours.get(wnum, (None, None))
         if rd:
-            def slot(kind, v):
-                return (f'<span class="slot"><b>{kind}</b> {html.escape(v)} h</span>'
-                        if v and v[0].isdigit() else
-                        f'<span class="slot none"><b>{kind}</b> none</span>')
             total = sum(float(v) for v in (rd, vw) if v and v[0].isdigit())
             rv = (f'<section class="review"><h2>Review before class'
                   f'<span class="hrs">{total:.2f} h</span></h2>'
-                  f'<p class="slots">{slot("Reading", rd)}{slot("Viewing", vw)}</p>'
                   f'<p class="rvnote">Material is provided in class. This is on top of the '
                   f'lesson, the lab and the assignment.</p>'
                   f'<div class="standing">{standing_html}'
@@ -416,11 +411,6 @@ ul.weeks .c{white-space:nowrap}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
-.slots{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 .8rem}
-.slot{background:var(--panel);border:1px solid var(--rule);padding:.4rem .8rem;font-size:.92rem}
-.slot b{color:var(--accent);font-weight:700;margin-right:.35rem}
-.slot.none{color:var(--faint)}
-.slot.none b{color:var(--faint)}
 .standing{border-left:3px solid var(--accent);padding-left:1.1rem;margin-top:1rem}
 .standing blockquote{margin:0;padding:0;border:0}
 .standing p{margin:0 0 .7rem;font-size:.95rem;color:var(--soft);max-width:62ch}
