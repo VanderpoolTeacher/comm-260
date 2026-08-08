@@ -124,8 +124,10 @@ def build_deck(wdir, wnum, wtitle, asset_files):
         assets.append((tag.group(1) if tag else "NONE", fn,
                        (alt.group(1).strip() if alt else "")))
 
-    html_chunks = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens),
-                             fmt="gfm+hard_line_breaks").split(SLIDE_SPLIT)
+    rendered = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens),
+                          fmt="gfm+hard_line_breaks")
+    rendered = re.sub(r"</?(?:em|i)>", "", rendered)   # slides are not italicised
+    html_chunks = rendered.split(SLIDE_SPLIT)
     cards = []
     for i, (title, frag) in enumerate(zip(titles, html_chunks)):
         tag, fn, alt = assets[i]
@@ -487,13 +489,21 @@ DECK_JS = """
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;
@@ -582,17 +592,29 @@ ul.weeks .c{white-space:nowrap}
   background:#E9E6DE;border:1px solid var(--rule)}
 .spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint);font-style:italic}
 .deckwrap{display:flex;flex-direction:column;gap:.8rem}
-.deckwrap:fullscreen{background:var(--ground);padding:3vmin;gap:2vmin;justify-content:stretch}
-.deckwrap:-webkit-full-screen{background:var(--ground);padding:3vmin}
-.deckwrap:fullscreen .deck{flex:1;min-height:0;overflow:auto}
-.deckwrap:fullscreen .slide.on{justify-content:center;padding:4vmin}
-.deckwrap:fullscreen .sn{font-size:1.1vmin;letter-spacing:.3em}
-.deckwrap:fullscreen .deck h2{font-size:clamp(1rem,2vw,1.8rem)}
-.deckwrap:fullscreen .sbody{font-size:clamp(1.1rem,2.2vw,2rem)}
-.deckwrap:fullscreen .sbody h1{font-size:clamp(2rem,5.2vw,5rem)}
-.deckwrap:fullscreen .sbody h2,.deckwrap:fullscreen .sbody h3{font-size:clamp(1.3rem,3vw,2.4rem)}
-.deckwrap:fullscreen .sbody p,.deckwrap:fullscreen .sbody li{max-width:44ch}
-.deckwrap:fullscreen .sfig img{max-width:min(70rem,86vw);max-height:52vh;object-fit:contain}
+body.presenting{overflow:hidden}
+.deckwrap.presenting{position:fixed;inset:0;z-index:9999;width:100vw;height:100vh;
+  background:var(--ground);padding:3vmin 4vmin;gap:2vmin;margin:0}
+.deckwrap.presenting .deck{flex:1;min-height:0;border:0;background:transparent;outline:none;
+  display:flex;align-items:center;justify-content:center}
+.deckwrap.presenting .slide{max-width:none}
+.deckwrap.presenting .slide.on{width:100%;height:100%;justify-content:center;
+  align-items:center;text-align:center;padding:2vmin 0;gap:1.5vmin;overflow:auto}
+.deckwrap.presenting .sn{font-size:1.6vmin;letter-spacing:.3em}
+.deckwrap.presenting .deck h2{font-size:2.4vmin}
+.deckwrap.presenting .sbody{font-size:3.4vmin}
+.deckwrap.presenting .sbody h1{font-size:7.5vmin;line-height:1.08;margin:.2em 0 .3em}
+.deckwrap.presenting .sbody h2,.deckwrap.presenting .sbody h3{font-size:4vmin}
+.deckwrap.presenting .sbody{width:100%;text-align:center}
+.deckwrap.presenting .sbody p,.deckwrap.presenting .sbody li{max-width:46ch;margin:.45em auto}
+.deckwrap.presenting .sbody ul,.deckwrap.presenting .sbody ol{padding:0;list-style-position:inside;
+  max-width:46ch;margin:.4em auto}
+.deckwrap.presenting .sbody blockquote{margin:.5em auto;max-width:46ch;border:0;padding:0}
+.deckwrap.presenting .sfig{margin-top:2vmin}
+.deckwrap.presenting .sfig img{width:auto;height:auto;max-width:88vw;max-height:58vh;
+  margin:0 auto;border:0;background:transparent}
+.deckwrap.presenting .dhud{padding:0 1vmin}
+.deckwrap.presenting .spend{font-size:2vmin}
 .dright{display:flex;gap:.5rem}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
 .dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);

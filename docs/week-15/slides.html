@@ -22,7 +22,7 @@ grade</strong></p>
 <h1 id="is-your-page-live">Is your page live?</h1>
 <p>Not local. <strong>Live, and reachable from a device that is not
 yours.</strong></p>
-<p><em>"It works on my machine"</em> is not published.</p>
+<p>"It works on my machine" is not published.</p>
 </div></section>
 <section class="slide"><p class="sn">3 / 15</p><h2>Outcomes</h2><div class="sbody">
 
@@ -42,11 +42,11 @@ the conventions you follow</li>
 
 <h3 id="week-11-outcome-112">Week 11, outcome 11.2</h3>
 <h2
-id="a-piece-where-photography-audio-and-video-are-interdependent"><em>"...a
-piece where photography, audio, and video are interdependent."</em></h2>
+id="a-piece-where-photography-audio-and-video-are-interdependent">"...a
+piece where photography, audio, and video are interdependent."</h2>
 <h3 id="week-15-outcome-151">Week 15, outcome 15.1</h3>
-<h2 id="a-landing-page-that-passes-the-removal-test"><em>"...a landing
-page that passes the removal test."</em></h2>
+<h2 id="a-landing-page-that-passes-the-removal-test">"...a landing
+page that passes the removal test."</h2>
 <h1 id="same-task-full-scale">Same task. Full scale.</h1>
 </div></section>
 <section class="slide"><p class="sn">5 / 15</p><h2>Delete one. What breaks?</h2><div class="sbody">
@@ -77,13 +77,13 @@ and put it on a web page</p>
 
 <h1 id="what-did-it-cost">What did it cost?</h1>
 <h2
-id="you-lose-control-which-lets-the-visitor-choose--not-a-cost"><em>"You
-lose control, which lets the visitor choose."</em> — <strong>not a
+id="you-lose-control-which-lets-the-visitor-choose--not-a-cost">"You
+lose control, which lets the visitor choose." — <strong>not a
 cost</strong></h2>
 <h2
-id="someone-can-land-on-my-video-and-never-see-the-statement-that-explains-what-any-of-it-is-for--a-cost"><em>"Someone
+id="someone-can-land-on-my-video-and-never-see-the-statement-that-explains-what-any-of-it-is-for--a-cost">"Someone
 can land on my video and never see the statement that explains what any
-of it is for."</em> — <strong>a cost</strong></h2>
+of it is for." — <strong>a cost</strong></h2>
 </div></section>
 <section class="slide"><p class="sn">9 / 15</p><h2>A positioning statement is not a reflection</h2><div class="sbody">
 
@@ -159,8 +159,8 @@ assessment.</strong></p>
 id="technical-quality--aesthetic-design--narrative-effectiveness">Technical
 quality · aesthetic design · narrative effectiveness</h1>
 <p><strong>One specific, actionable point each.</strong></p>
-<p><em>The test: does the person receiving it know what to do
-next?</em></p>
+<p>The test: does the person receiving it know what to do
+next?</p>
 </div></section>
 <section class="slide"><p class="sn">15 / 15</p><h2>Everything that got you here</h2><div class="sbody">
 
@@ -215,13 +215,21 @@ questions</td>
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

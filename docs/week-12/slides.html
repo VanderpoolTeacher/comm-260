@@ -33,7 +33,7 @@ photography set is <strong>week 3</strong>, at twelve images.</h1>
 <h1 id="by-the-end-of-this-week-you-can">By the end of this week you
 can</h1>
 <ol type="1">
-<li>State your positioning as <em>"I make ___ for ___"</em> and name
+<li>State your positioning as "I make ___ for ___" and name
 your professional context specifically</li>
 <li>Write a style guide with values that can be checked — hex codes,
 typefaces, aperture and pacing rules</li>
@@ -90,10 +90,10 @@ for ______________."</h1>
 </div></section>
 <section class="slide"><p class="sn">7 / 17</p><h2>Two ways it fails</h2><div class="sbody">
 
-<h2 id="i-make-content-for-people"><em>"I make content for
-people."</em></h2>
+<h2 id="i-make-content-for-people">"I make content for
+people."</h2>
 <p><strong>Too broad. It rules nothing out.</strong></p>
-<h2 id="im-a-videographer"><em>"I'm a videographer."</em></h2>
+<h2 id="im-a-videographer">"I'm a videographer."</h2>
 <p><strong>A job title. It says what you are called, not who the work is
 for.</strong></p>
 </div></section>
@@ -130,19 +130,19 @@ be <strong>checked</strong> against this?</h1>
 </thead>
 <tbody>
 <tr>
-<td><em>"Warm and approachable"</em></td>
+<td>"Warm and approachable"</td>
 <td><code>#C4703A</code> primary, <code>#F4EFE8</code> ground</td>
 </tr>
 <tr>
-<td><em>"Clean, modern type"</em></td>
+<td>"Clean, modern type"</td>
 <td>Söhne 600 headings, 400 at 17px body</td>
 </tr>
 <tr>
-<td><em>"Intimate portraits"</em></td>
+<td>"Intimate portraits"</td>
 <td>Shallow depth — f/2.8 or wider — every portrait</td>
 </tr>
 <tr>
-<td><em>"Good pacing"</em></td>
+<td>"Good pacing"</td>
 <td>No shot over 6 seconds. Music never under speech</td>
 </tr>
 </tbody>
@@ -188,7 +188,7 @@ count.</strong></p>
 <strong>now</strong>, not in week 15.</h1>
 <p><strong>Project rubric</strong> — components A–H, 85%</p>
 <p><strong>Presentation rubric</strong> — component I, 15%</p>
-<p><em>Two independent grades that never mix.</em></p>
+<p>Two independent grades that never mix.</p>
 </div></section></div><div class="dhud"><button type="button" id="prev">&larr; Back</button><span id="dcount"></span><span class="dright"><button type="button" id="fs">Full screen</button><button type="button" id="next">Next &rarr;</button></span></div></div>
 <script>
 (function(){
@@ -209,13 +209,21 @@ count.</strong></p>
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

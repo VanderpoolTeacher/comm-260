@@ -49,8 +49,8 @@ mean</strong></li>
 <section class="slide"><p class="sn">6 / 18</p><h2>Six months from now</h2><div class="sbody">
 
 <h1 id="outcome-92">Outcome 9.2</h1>
-<h2 id="can-be-reopened-in-six-months-and-still-work"><em>"...can be
-reopened in six months and still work."</em></h2>
+<h2 id="can-be-reopened-in-six-months-and-still-work">"...can be
+reopened in six months and still work."</h2>
 </div></section>
 <section class="slide"><p class="sn">7 / 18</p><h2>Two projects</h2><div class="sbody">
 
@@ -145,13 +145,21 @@ needs a photograph, your audio, and your video.</h1>
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

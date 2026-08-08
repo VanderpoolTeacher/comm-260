@@ -19,7 +19,7 @@
 
 <h1 id="by-friday-you-can">By Friday you can</h1>
 <ol type="1">
-<li>Write a creative intent <em>before</em> you shoot</li>
+<li>Write a creative intent before you shoot</li>
 <li>Choose compositions that serve that stated intent</li>
 <li>Judge whether an image reads as intended to someone who did not
 write it</li>
@@ -31,15 +31,15 @@ the same frame</strong></li>
 <section class="slide"><p class="sn">3 / 14</p><div class="sbody">
 
 <h1 id="this-is-a-topic">This is a topic.</h1>
-<h2 id="im-going-to-photograph-the-river"><em>"I'm going to photograph
-the river."</em></h2>
+<h2 id="im-going-to-photograph-the-river">"I'm going to photograph
+the river."</h2>
 <p>It says what you will point at. It says nothing about what the
 pictures should do.</p>
 </div></section>
 <section class="slide"><p class="sn">4 / 14</p><div class="sbody">
 
 <h1 id="this-cannot-fail">This cannot fail.</h1>
-<h2 id="to-show-emotion"><em>"To show emotion."</em></h2>
+<h2 id="to-show-emotion">"To show emotion."</h2>
 <p>Any six images satisfy it.</p>
 <p><strong>An intent that cannot be missed cannot be
 served.</strong></p>
@@ -58,7 +58,7 @@ would fail this intent?</h2>
 <section class="slide"><p class="sn">7 / 14</p><div class="sbody">
 
 <h1 id="composition-is-now-a-means">Composition is now a means</h1>
-<p>The question is no longer <em>is this well composed.</em></p>
+<p>The question is no longer is this well composed.</p>
 <p>It is <strong>does this composition serve what I said I was
 doing.</strong></p>
 </div></section>
@@ -99,8 +99,8 @@ that does not serve the intent</h1>
 this week, every project carries a tools statement</h1>
 <p>What you used · what you set · <strong>why those settings for that
 situation</strong></p>
-<p><em>"f/2.8 to drop the cluttered background"</em> — competency</p>
-<p><em>"f/2.8, 1/250, ISO 400"</em> — record-keeping</p>
+<p>"f/2.8 to drop the cluttered background" — competency</p>
+<p>"f/2.8, 1/250, ISO 400" — record-keeping</p>
 </div></section>
 <section class="slide"><p class="sn">14 / 14</p><h2>Keep everything</h2><div class="sbody">
 
@@ -128,13 +128,21 @@ made this term.</p>
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

@@ -43,7 +43,7 @@ can</h1>
 <li>Apply the removal test to your own work</li>
 <li>Produce a piece where photography, audio, and video are
 interdependent</li>
-<li>Diagnose <em>why</em> a piece reads as assembled rather than
+<li>Diagnose why a piece reads as assembled rather than
 integrated</li>
 </ol>
 </div></section>
@@ -83,8 +83,8 @@ thing.</h1>
 </thead>
 <tbody>
 <tr>
-<td><em>"the workshop was freezing"</em> over someone in a coat</td>
-<td><em>"thirty years"</em> over hands that have</td>
+<td>"the workshop was freezing" over someone in a coat</td>
+<td>"thirty years" over hands that have</td>
 </tr>
 <tr>
 <td>A photograph of the person speaking</td>
@@ -108,8 +108,8 @@ video is not a medium.</h1>
 <h1 id="detecting-is-the-test">Detecting is the test.</h1>
 <h1 id="diagnosing-is-the-outcome"><strong>Diagnosing is the
 outcome.</strong></h1>
-<p><em>Which two are duplicating each other? Which one was added to
-satisfy a requirement?</em></p>
+<p>Which two are duplicating each other? Which one was added to
+satisfy a requirement?</p>
 </div></section>
 <section class="slide"><p class="sn">13 / 16</p><h2>Say this before anyone builds</h2><div class="sbody">
 
@@ -133,8 +133,8 @@ own work.</h1>
 
 <h1 id="outcome-151">Outcome 15.1</h1>
 <h2
-id="integrate-three-media-into-a-landing-page-that-passes-the-removal-test"><em>"...integrate
-three media into a landing page that passes the removal test."</em></h2>
+id="integrate-three-media-into-a-landing-page-that-passes-the-removal-test">"...integrate
+three media into a landing page that passes the removal test."</h2>
 <p><strong>The same sentence. Full scale. Whole grade
 attached.</strong></p>
 </div></section></div><div class="dhud"><button type="button" id="prev">&larr; Back</button><span id="dcount"></span><span class="dright"><button type="button" id="fs">Full screen</button><button type="button" id="next">Next &rarr;</button></span></div></div>
@@ -157,13 +157,21 @@ attached.</strong></p>
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

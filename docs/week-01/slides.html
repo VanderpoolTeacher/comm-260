@@ -32,11 +32,11 @@ Digital Media Production</h3>
 
 <p><strong>Which of these is a named choice, not a
 preference?</strong></p>
-<p>A · <em>"The colour grading is really nice"</em><br />
-B · <em>"The shallow depth of field isolates him from the
-crowd"</em><br />
-C · <em>"It feels calm and peaceful"</em><br />
-D · <em>"I love the composition"</em></p>
+<p>A · "The colour grading is really nice"<br />
+B · "The shallow depth of field isolates him from the
+crowd"<br />
+C · "It feels calm and peaceful"<br />
+D · "I love the composition"</p>
 </div></section>
 <section class="slide"><p class="sn">5 / 26</p><div class="sbody">
 
@@ -191,7 +191,7 @@ does</h1>
 <h1 id="the-glossary">The glossary</h1>
 <p>You get it this week. <strong>It does not change.</strong></p>
 <p>One term, one meaning, for fifteen weeks.</p>
-<p>Read the <em><strong>Never use</strong></em> column. That is the part
+<p>Read the <strong>Never use</strong> column. That is the part
 that makes it binding.</p>
 </div></section>
 <section class="slide"><p class="sn">26 / 26</p><div class="sbody">
@@ -221,13 +221,21 @@ alternative would have cost.</strong></p>
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
   function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function paint(on){ wrap.classList.toggle('presenting',on);
+    document.body.classList.toggle('presenting',on);
+    fsb.textContent=on?'Exit full screen':'Full screen';
+    if(on) d.focus(); }
   fsb.addEventListener('click',function(e){ e.stopPropagation();
-    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
-    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+    var on=!wrap.classList.contains('presenting');
+    paint(on);
+    try{ if(on){ (wrap.requestFullscreen||wrap.webkitRequestFullscreen||function(){}).call(wrap); }
+         else if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }
+    catch(err){}
+  });
   ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
-    document.addEventListener(ev,function(){
-      fsb.textContent=inFS()?'Exit full screen':'Full screen';
-      if(inFS()) d.focus();});});
+    document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;
