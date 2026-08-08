@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 2 term match · COMM 260</title>
+<style>
+:root{
+  --ground:#E9E6DE; --panel:#F2F0EA; --ink:#1A1D1F;
+  --soft:rgba(26,29,31,.66); --faint:rgba(26,29,31,.45);
+  --rule:rgba(26,29,31,.16); --accent:#2F5D50; --alert:#7A3B52;
+  --ok-bg:rgba(47,93,80,.10); --no-bg:rgba(122,59,82,.10);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#15191A; --panel:#1D2223; --ink:#E9E6DE;
+    --soft:rgba(233,230,222,.66); --faint:rgba(233,230,222,.42);
+    --rule:rgba(233,230,222,.16); --accent:#7FB3A0; --alert:#C98BA0;
+    --ok-bg:rgba(127,179,160,.12); --no-bg:rgba(201,139,160,.12);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:16px/1.6 'Helvetica Neue',Helvetica,Arial,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:50rem;margin:0 auto;padding:clamp(1.2rem,4vw,2.5rem)}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 .5rem}
+h1{font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;letter-spacing:-.02em;margin:0 0 .6rem;text-wrap:balance}
+.meta{color:var(--soft);margin:0 0 .4rem}
+.note{background:var(--panel);border:1px solid var(--rule);padding:.9rem 1.1rem;margin:1.4rem 0;color:var(--soft);font-size:.94rem}
+.note b{color:var(--ink)}
+
+h2{font-size:1.25rem;margin:2.6rem 0 .3rem;letter-spacing:-.01em}
+h2 .n{color:var(--accent)}
+.rlede{color:var(--soft);margin:.2rem 0 1.2rem;font-size:.96rem}
+
+ol.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+li.item{background:var(--panel);border:1px solid var(--rule);padding:.9rem 1rem}
+li.item.ok{border-color:var(--accent);background:var(--ok-bg)}
+li.item.no{border-color:var(--alert);background:var(--no-bg)}
+.q{font-weight:700;margin:0 0 .55rem;display:block}
+.q .idx{color:var(--faint);font-weight:400;margin-right:.5rem;font-variant-numeric:tabular-nums}
+select{
+  width:100%;padding:.55rem .6rem;font:inherit;font-size:.95rem;
+  background:var(--ground);color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.fb{margin:.6rem 0 0;font-size:.93rem;line-height:1.5}
+.fb.ok{color:var(--accent)}
+.fb.no{color:var(--alert)}
+.fb:empty{display:none}
+
+.bar{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin:1rem 0 0;color:var(--soft);font-size:.9rem}
+button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
+  color:var(--ink);border:1px solid var(--rule);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.done{color:var(--accent);font-weight:700}
+
+.locked{background:var(--panel);border:1px dashed var(--rule);padding:1.1rem;color:var(--soft);margin-top:.8rem}
+.locked b{color:var(--ink)}
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--rule);color:var(--faint);font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">COMM 260 · Week 2 · Interactive</p>
+  <h1>Module 2 term match</h1>
+  <p class="meta">Eleven terms. Three rounds, getting harder.</p>
+  <p class="meta"><b>Formative and unscored.</b> Unlimited attempts — this is practice, and being wrong here is free.</p>
+
+  <div class="note">
+    Serves outcomes <b>2.1, 2.3, 2.4</b> and <b>2.5</b>. Round 3 is the only place the ranking demand is drilled before the assignment.
+  </div>
+
+  <div id="rounds"></div>
+
+  <footer>
+    Getting an item wrong tells you more than getting it right. Run it again before the session,
+    and once more after.
+  </footer>
+</main>
+
+<script>
+const ROUNDS = [
+  {
+    "n": 1,
+    "title": "Term → the decision it names",
+    "lede": "Eleven terms. Match each to the <em>decision</em> it names — not its dictionary definition.",
+    "prompt": "Choose the decision",
+    "pairs": [
+      [
+        "Subject placement",
+        "Where the subject sits in the frame"
+      ],
+      [
+        "Subject emphasis",
+        "What makes the subject read first"
+      ],
+      [
+        "Balance",
+        "How visual weight is distributed"
+      ],
+      [
+        "Negative space",
+        "What is deliberately left empty"
+      ],
+      [
+        "Leading the eye",
+        "The route attention travels"
+      ],
+      [
+        "Framing within the frame",
+        "Something in the scene used as a border"
+      ],
+      [
+        "Cropping",
+        "Deciding the edge in the camera"
+      ],
+      [
+        "Shallow depth of field",
+        "Isolates the subject and loses the context"
+      ],
+      [
+        "Deep depth of field",
+        "Keeps the context and emphasises nothing"
+      ],
+      [
+        "Frozen motion",
+        "Stops the moment"
+      ],
+      [
+        "Motion blur",
+        "Conveys movement and loses detail"
+      ]
+    ],
+    "distractors": [
+      "Where the subject sits",
+      "The rule that subjects go a third of the way in",
+      "Making the photograph sharper overall"
+    ],
+    "special": [
+      {
+        "term": "Subject emphasis",
+        "chose": "Where the subject sits",
+        "text": "This is the distinction the whole week is built on. <b>Placement is where the subject sits. Emphasis is what makes it read first</b> — and placement is only one of five ways to get it. A centred subject can still lose."
+      }
+    ]
+  },
+  {
+    "n": 2,
+    "title": "Image → term",
+    "lede": "Name what each photograph is doing.",
+    "locked": "This round needs its six-image bank — the depth-of-field and motion pairs from the course image prompts, which have not been generated yet. The depth pairs have to be shown as pairs; one alone teaches nothing, because the term is comparative."
+  },
+  {
+    "n": 3,
+    "title": "Rank the means",
+    "lede": "Order placement, scale, focus, contrast and light by how much work each is doing.",
+    "locked": "This round needs its four photographs. It cannot run on written descriptions — describing the image would state the answer, and outcome 2.5 asks you to see which means is doing the most work."
+  }
+];
+
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const host = document.getElementById('rounds');
+
+ROUNDS.forEach(r => {
+  const sec = document.createElement('section');
+  sec.innerHTML = `<h2><span class="n">Round ${r.n}</span> · ${r.title}</h2><p class="rlede">${r.lede}</p>`;
+
+  if (r.locked) {
+    sec.insertAdjacentHTML('beforeend',
+      `<div class="locked"><b>Not available yet.</b> ${esc(r.locked)}</div>`);
+    host.appendChild(sec);
+    return;
+  }
+
+  const options = shuffle(r.pairs.map(p => p[1]).concat(r.distractors));
+  const items = shuffle(r.pairs);
+  const ol = document.createElement('ol');
+  ol.className = 'items';
+
+  items.forEach((pair, i) => {
+    const [term, answer] = pair;
+    const id = `r${r.n}i${i}`;
+    const li = document.createElement('li');
+    li.className = 'item';
+    li.innerHTML =
+      `<label class="q" for="${id}"><span class="idx">${i + 1}</span>${esc(term)}</label>` +
+      `<select id="${id}" aria-describedby="${id}fb">` +
+        `<option value="">${esc(r.prompt)}…</option>` +
+        options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('') +
+      `</select>` +
+      `<p class="fb" id="${id}fb" role="status" aria-live="polite"></p>`;
+    ol.appendChild(li);
+
+    const sel = li.querySelector('select');
+    const fb = li.querySelector('.fb');
+    sel.addEventListener('change', () => {
+      const v = sel.value;
+      li.classList.remove('ok', 'no');
+      fb.className = 'fb';
+      if (!v) { fb.innerHTML = ''; update(); return; }
+      if (v === answer) {
+        li.classList.add('ok');
+        fb.classList.add('ok');
+        fb.innerHTML = `Yes. <b>${esc(term)}</b> — ${esc(answer.charAt(0).toLowerCase() + answer.slice(1))}.`;
+      } else {
+        li.classList.add('no');
+        fb.classList.add('no');
+        const sp = (r.special || []).find(s => s.term === term && s.chose === v);
+        const anyHit = r.specialAny && r.specialAny.choices.includes(v);
+        fb.innerHTML = sp ? sp.text
+                     : anyHit ? r.specialAny.text
+                     : `Not this one. Ask what <b>${esc(term)}</b> does — the effect it has, not the words it is defined in. Try again.`;
+      }
+      update();
+    });
+  });
+
+  sec.appendChild(ol);
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.innerHTML = `<button type="button">Start this round again</button><span class="count"></span>`;
+  bar.querySelector('button').addEventListener('click', () => {
+    ol.querySelectorAll('select').forEach(s => { s.value = ''; });
+    ol.querySelectorAll('.item').forEach(li => li.classList.remove('ok', 'no'));
+    ol.querySelectorAll('.fb').forEach(f => { f.innerHTML = ''; f.className = 'fb'; });
+    update();
+  });
+  sec.appendChild(bar);
+  host.appendChild(sec);
+
+  function update() {
+    const total = items.length;
+    const got = ol.querySelectorAll('.item.ok').length;
+    const c = bar.querySelector('.count');
+    c.className = got === total ? 'count done' : 'count';
+    c.textContent = got === total
+      ? `All ${total} matched. Round ${r.n} complete.`
+      : `${got} of ${total} matched`;
+  }
+  update();
+});
+</script>
+</body>
+</html>

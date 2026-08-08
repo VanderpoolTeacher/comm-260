@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 1 vocabulary match · COMM 260</title>
+<style>
+:root{
+  --ground:#E9E6DE; --panel:#F2F0EA; --ink:#1A1D1F;
+  --soft:rgba(26,29,31,.66); --faint:rgba(26,29,31,.45);
+  --rule:rgba(26,29,31,.16); --accent:#2F5D50; --alert:#7A3B52;
+  --ok-bg:rgba(47,93,80,.10); --no-bg:rgba(122,59,82,.10);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#15191A; --panel:#1D2223; --ink:#E9E6DE;
+    --soft:rgba(233,230,222,.66); --faint:rgba(233,230,222,.42);
+    --rule:rgba(233,230,222,.16); --accent:#7FB3A0; --alert:#C98BA0;
+    --ok-bg:rgba(127,179,160,.12); --no-bg:rgba(201,139,160,.12);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font:16px/1.6 'Helvetica Neue',Helvetica,Arial,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:50rem;margin:0 auto;padding:clamp(1.2rem,4vw,2.5rem)}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 .5rem}
+h1{font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;letter-spacing:-.02em;margin:0 0 .6rem;text-wrap:balance}
+.meta{color:var(--soft);margin:0 0 .4rem}
+.note{background:var(--panel);border:1px solid var(--rule);padding:.9rem 1.1rem;margin:1.4rem 0;color:var(--soft);font-size:.94rem}
+.note b{color:var(--ink)}
+
+h2{font-size:1.25rem;margin:2.6rem 0 .3rem;letter-spacing:-.01em}
+h2 .n{color:var(--accent)}
+.rlede{color:var(--soft);margin:.2rem 0 1.2rem;font-size:.96rem}
+
+ol.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+li.item{background:var(--panel);border:1px solid var(--rule);padding:.9rem 1rem}
+li.item.ok{border-color:var(--accent);background:var(--ok-bg)}
+li.item.no{border-color:var(--alert);background:var(--no-bg)}
+.q{font-weight:700;margin:0 0 .55rem;display:block}
+.q .idx{color:var(--faint);font-weight:400;margin-right:.5rem;font-variant-numeric:tabular-nums}
+select{
+  width:100%;padding:.55rem .6rem;font:inherit;font-size:.95rem;
+  background:var(--ground);color:var(--ink);border:1px solid var(--rule);border-radius:0;
+}
+.fb{margin:.6rem 0 0;font-size:.93rem;line-height:1.5}
+.fb.ok{color:var(--accent)}
+.fb.no{color:var(--alert)}
+.fb:empty{display:none}
+
+.bar{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin:1rem 0 0;color:var(--soft);font-size:.9rem}
+button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
+  color:var(--ink);border:1px solid var(--rule);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.done{color:var(--accent);font-weight:700}
+
+.locked{background:var(--panel);border:1px dashed var(--rule);padding:1.1rem;color:var(--soft);margin-top:.8rem}
+.locked b{color:var(--ink)}
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--rule);color:var(--faint);font-size:.85rem}
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">COMM 260 · Week 1 · Interactive</p>
+  <h1>Module 1 vocabulary match</h1>
+  <p class="meta">Nine terms. Three rounds, getting harder.</p>
+  <p class="meta"><b>Formative and unscored.</b> Unlimited attempts — this is practice, and being wrong here is free.</p>
+
+  <div class="note">
+    Serves outcome <b>1.1</b> — read an image and name what it is doing, using course vocabulary.
+    Nothing from later modules appears here.
+  </div>
+
+  <div id="rounds"></div>
+
+  <footer>
+    Getting an item wrong tells you more than getting it right. Run it again before the session,
+    and once more after.
+  </footer>
+</main>
+
+<script>
+const ROUNDS = [
+  {
+    n: 1,
+    title: "Term → what it does",
+    lede: "Match each term to what it <em>does</em>. Not what the glossary says it is — what it does.",
+    prompt: "Choose what it does",
+    pairs: [
+      ["Preference",        "Tells you about the person speaking, not about the work"],
+      ["Named choice",      "Says what the maker did and what it accomplished"],
+      ["The frame",         "Decides what the picture is about by deciding where it ends"],
+      ["Exclusion",         "Removes something from view without announcing that it is gone"],
+      ["Deliberate choice", "Could have been done otherwise, and was not"],
+      ["Default",           "Was never questioned, or could not have been changed"],
+      ["Cost",              "What you gave up to get the effect you wanted"],
+      ["Pace",              "Controls how long the audience sits with something"],
+      ["Silence",           "Does work that becomes audible only when it is removed"]
+    ],
+    distractors: [
+      "A mistake the maker should have caught",
+      "The best-looking option available",
+      "Something only an expert would notice"
+    ],
+    special: [{
+      term: "Default",
+      chose: "A mistake the maker should have caught",
+      text: "Close, and worth being precise about. A <b>default</b> is not a mistake — it is something never questioned, or something that could not have been changed. A dark room is not a failure of judgment."
+    }]
+  },
+  {
+    n: 2,
+    title: "Image → term",
+    lede: "Name what each photograph is doing.",
+    locked: "This round needs its six-image bank, which has not been sourced yet. Rounds 1 and 3 run without it."
+  },
+  {
+    n: 3,
+    title: "Preference → its named-choice rewrite",
+    lede: "The same observation, said uselessly and said well. Match each preference to the rewrite that names the choice <em>and</em> what it accomplished.",
+    prompt: "Choose the rewrite",
+    pairs: [
+      ["“The background is blurry”",        "Only her face is sharp, so the crowd stops competing for attention"],
+      ["“It’s really quiet in the middle”", "The four-second silence after the answer makes you sit with it"],
+      ["“The camera is really close”",      "The frame tightens as she stops talking, so you read her face instead of her words"],
+      ["“The colours are nice”",            "Everything is muted except one red coat, so the eye finds her before you know why"],
+      ["“It feels rushed”",                 "No moment is held for more than two seconds, so nothing gets weight"]
+    ],
+    distractors: [
+      "The shallow focus is a really beautiful effect",
+      "The pacing is very well judged"
+    ],
+    specialAny: {
+      choices: ["The shallow focus is a really beautiful effect", "The pacing is very well judged"],
+      text: "This one is wearing a lab coat. It names a technique and stops. A <b>named choice</b> has two halves — what the maker did <b>and what it accomplished.</b> Add the second half."
+    }
+  }
+];
+
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const host = document.getElementById('rounds');
+
+ROUNDS.forEach(r => {
+  const sec = document.createElement('section');
+  sec.innerHTML = `<h2><span class="n">Round ${r.n}</span> · ${r.title}</h2><p class="rlede">${r.lede}</p>`;
+
+  if (r.locked) {
+    sec.insertAdjacentHTML('beforeend',
+      `<div class="locked"><b>Not available yet.</b> ${esc(r.locked)}</div>`);
+    host.appendChild(sec);
+    return;
+  }
+
+  const options = shuffle(r.pairs.map(p => p[1]).concat(r.distractors));
+  const items = shuffle(r.pairs);
+  const ol = document.createElement('ol');
+  ol.className = 'items';
+
+  items.forEach((pair, i) => {
+    const [term, answer] = pair;
+    const id = `r${r.n}i${i}`;
+    const li = document.createElement('li');
+    li.className = 'item';
+    li.innerHTML =
+      `<label class="q" for="${id}"><span class="idx">${i + 1}</span>${esc(term)}</label>` +
+      `<select id="${id}" aria-describedby="${id}fb">` +
+        `<option value="">${esc(r.prompt)}…</option>` +
+        options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('') +
+      `</select>` +
+      `<p class="fb" id="${id}fb" role="status" aria-live="polite"></p>`;
+    ol.appendChild(li);
+
+    const sel = li.querySelector('select');
+    const fb = li.querySelector('.fb');
+    sel.addEventListener('change', () => {
+      const v = sel.value;
+      li.classList.remove('ok', 'no');
+      fb.className = 'fb';
+      if (!v) { fb.innerHTML = ''; update(); return; }
+      if (v === answer) {
+        li.classList.add('ok');
+        fb.classList.add('ok');
+        fb.innerHTML = `Yes. <b>${esc(term)}</b> — ${esc(answer.charAt(0).toLowerCase() + answer.slice(1))}.`;
+      } else {
+        li.classList.add('no');
+        fb.classList.add('no');
+        const sp = (r.special || []).find(s => s.term === term && s.chose === v);
+        const anyHit = r.specialAny && r.specialAny.choices.includes(v);
+        fb.innerHTML = sp ? sp.text
+                     : anyHit ? r.specialAny.text
+                     : `Not this one. Ask what <b>${esc(term)}</b> does — the effect it has, not the words it is defined in. Try again.`;
+      }
+      update();
+    });
+  });
+
+  sec.appendChild(ol);
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.innerHTML = `<button type="button">Start this round again</button><span class="count"></span>`;
+  bar.querySelector('button').addEventListener('click', () => {
+    ol.querySelectorAll('select').forEach(s => { s.value = ''; });
+    ol.querySelectorAll('.item').forEach(li => li.classList.remove('ok', 'no'));
+    ol.querySelectorAll('.fb').forEach(f => { f.innerHTML = ''; f.className = 'fb'; });
+    update();
+  });
+  sec.appendChild(bar);
+  host.appendChild(sec);
+
+  function update() {
+    const total = items.length;
+    const got = ol.querySelectorAll('.item.ok').length;
+    const c = bar.querySelector('.count');
+    c.className = got === total ? 'count done' : 'count';
+    c.textContent = got === total
+      ? `All ${total} matched. Round ${r.n} complete.`
+      : `${got} of ${total} matched`;
+  }
+  update();
+});
+</script>
+</body>
+</html>

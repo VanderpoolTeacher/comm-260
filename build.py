@@ -27,6 +27,7 @@ are dropped, so nothing in docs/ points at material students should not have.
 """
 
 import html
+import json
 import os
 import pathlib
 import re
@@ -98,17 +99,26 @@ def collect():
             if f.exists():
                 out = f"{wdir.name}/{slug}.html"
                 pub[f.resolve()] = out
-                items.append((f, out, label))
+                items.append((f, out, label, None))
         sfdir = wdir / "student-files"
         if sfdir.is_dir():
             for f in sorted(sfdir.glob("*.md")):
                 out = f"{wdir.name}/{slugify(f.stem)}.html"
                 pub[f.resolve()] = out
-                items.append((f, out, "Sheet"))
+                items.append((f, out, "Sheet", None))
             for sub in sorted(p for p in sfdir.iterdir() if p.is_dir()):
                 out = f"{wdir.name}/{sub.name}/index.html"
                 pub[sub.resolve()] = out
-                items.append((sub, out, "Starter files"))
+                meta = {}
+                mf = sub / "meta.json"
+                if mf.exists():
+                    meta = json.loads(mf.read_text())
+                # a built artifact stands in for its withheld build spec, so the
+                # lesson's existing link resolves to the thing instead of the spec
+                if meta.get("spec"):
+                    pub[(wdir / meta["spec"]).resolve()] = out
+                items.append((sub, out, meta.get("label", "Starter files"),
+                              meta.get("title", sub.name.replace("-", " "))))
         weeks.append((wdir, wnum, items))
 
     for rel, out, label, blurb in REFERENCE:
@@ -221,14 +231,15 @@ def main():
                 wtitle = h1
 
         cards = []
-        for f, out, label in items:
+        for f, out, label, override in items:
             if f.is_dir():
-                shutil.copytree(f, DOCS / pathlib.PurePosixPath(out).parent, dirs_exist_ok=True)
-                cards.append((os.path.relpath(out, wdir.name), label,
-                              f.name.replace("-", " ")))
+                shutil.copytree(f, DOCS / pathlib.PurePosixPath(out).parent,
+                                dirs_exist_ok=True,
+                                ignore=shutil.ignore_patterns("meta.json"))
+                cards.append((os.path.relpath(out, wdir.name), label, override))
                 continue
             text = f.read_text()
-            title = first_h1(text) or label
+            title = override or first_h1(text) or label
             text, st = rewrite(text, f, out, pub)
             kept += st["kept"]; unwrapped += st["unwrapped"]
             crumb = (
