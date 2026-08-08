@@ -1,0 +1,131 @@
+/* ==============================================================
+   YOUR STYLE GUIDE GOES HERE.
+
+   Every value below is a placeholder. Replace each one with the
+   value from your own style guide. If a line still says "REPLACE"
+   when you hand this in, you have not applied your brand.
+
+   This file is deliberately plain. It is a working scaffold, not
+   a design — the design is your job.
+   ============================================================== */
+
+:root {
+  /* --- Colour · REPLACE with your hex codes ------------------ */
+  --ink:        #1a1a1a;   /* REPLACE — main text */
+  --paper:      #ffffff;   /* REPLACE — background */
+  --accent:     #666666;   /* REPLACE — your one accent colour */
+  --muted:      #767676;   /* REPLACE — secondary text */
+  --line:       #e0e0e0;   /* REPLACE — rules and borders */
+
+  /* --- Type · REPLACE with your typefaces -------------------- */
+  --font-display: Georgia, serif;              /* REPLACE — headings */
+  --font-body:    system-ui, sans-serif;       /* REPLACE — body text */
+
+  /* --- Scale · adjust to taste ------------------------------- */
+  --size-logo:  clamp(2rem, 6vw, 3.5rem);
+  --size-h2:    clamp(1.3rem, 3vw, 2rem);
+  --size-body:  1rem;
+
+  /* --- Spacing ---------------------------------------------- */
+  --gap:        1.5rem;
+  --section-y:  clamp(3rem, 8vw, 6rem);
+  --measure:    65ch;      /* max line length for readable text */
+}
+
+/* --- reset ------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+img, video { max-width: 100%; height: auto; display: block; }
+audio { width: 100%; max-width: 40rem; }
+
+/* --- page -------------------------------------------------- */
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--size-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- header ------------------------------------------------ */
+.masthead {
+  padding: var(--section-y) var(--gap) calc(var(--section-y) / 2);
+  max-width: 68rem;
+  margin: 0 auto;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: var(--size-logo);
+  line-height: 1.05;
+  margin: 0;
+}
+.tagline {
+  color: var(--muted);
+  margin: .5rem 0 0;
+  max-width: var(--measure);
+}
+
+/* --- optional jump nav (non-linear structure) -------------- */
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 0 var(--gap) var(--gap);
+  max-width: 68rem;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--line);
+}
+.jump a { color: var(--accent); text-decoration: none; }
+.jump a:hover { text-decoration: underline; }
+
+/* --- sections ---------------------------------------------- */
+.section {
+  padding: var(--section-y) var(--gap);
+  max-width: 68rem;
+  margin: 0 auto;
+  border-top: 1px solid var(--line);
+}
+.section h2 {
+  font-family: var(--font-display);
+  font-size: var(--size-h2);
+  margin: 0 0 1rem;
+}
+.blurb {
+  color: var(--muted);
+  max-width: var(--measure);
+  margin: 0 0 1.5rem;
+}
+
+/* --- photo grid -------------------------------------------- */
+/* auto-fit means the number of columns changes with screen width.
+   Change 18rem to make the images bigger or smaller.            */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--gap);
+}
+.grid figure { margin: 0; }
+
+/* --- prose -------------------------------------------------- */
+.prose { max-width: var(--measure); }
+.prose p { margin: 0 0 1rem; }
+
+/* --- footer ------------------------------------------------- */
+.footer {
+  padding: var(--gap);
+  max-width: 68rem;
+  margin: 0 auto;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+/* --- accessibility ------------------------------------------ */
+a:focus-visible,
+audio:focus-visible,
+video:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
