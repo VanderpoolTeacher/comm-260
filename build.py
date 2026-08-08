@@ -87,24 +87,27 @@ def first_h1(text):
 
 
 def parse_review():
-    """Per-week reading and viewing expectations, from the design document."""
+    """Per-week hours, and the standing expectation that applies to all of them."""
     doc = DESIGN / "readings-and-viewings.md"
     if not doc.exists():
-        return {}
-    out, week = {}, None
-    for line in doc.read_text().split("\n"):
-        m = re.match(r"^### Week (\d+) ·", line)
-        if m:
-            week = int(m.group(1))
-            out[week] = []
-            continue
-        if line.startswith("**Selecting the material."):
-            week = None
-            continue
-        m = re.match(r"^\| \*\*(Reading|Viewing)\*\* \| (.*?) \| (.*?) \|\s*$", line)
-        if m and week:
-            out[week].append((m.group(1), m.group(2).strip(), m.group(3).strip()))
-    return out
+        return {}, ""
+    text = doc.read_text()
+
+    hours = {}
+    for w, rd, vw in re.findall(
+            r"^\| (\d{1,2}) \| [^|]*\| [\d.]+ \| ([\d.—]+) \| ([\d.—]+) \| \*\*[\d.]+\*\* \|$",
+            text, re.M):
+        hours[int(w)] = (rd.strip(), vw.strip())
+
+    standing = ""
+    m = re.search(r"^## What students do — every week\s*(.*?)^Terms are in", text, re.M | re.S)
+    if m:
+        standing = "\n".join(
+            l[2:] if l.startswith("> ") else ("" if l.strip() == ">" else l)
+            for l in m.group(1).strip().split("\n")
+            if not l.startswith("**This instruction")
+        ).strip()
+    return hours, standing
 
 
 def collect():
@@ -238,7 +241,8 @@ def main():
     (DOCS / "style.css").write_text(STYLE)
 
     pub, weeks = collect()
-    review = parse_review()
+    hours, standing = parse_review()
+    standing_html = md_to_html(standing) if standing else ""
     kept = unwrapped = pages = 0
     index_rows = []
 
@@ -280,21 +284,25 @@ def main():
         crumb = (f'<nav class="crumb"><a href="../index.html">All weeks</a>'
                  f'<span>/</span><em>Week {wnum}</em></nav>')
 
-        rows = review.get(wnum, [])
-        if rows:
-            hrs = sum(float(t.split()[0]) for _, t, _ in rows if t[0].isdigit())
-            dl = "".join(
-                f'<div><dt>{html.escape(kind)}'
-                f'{" &middot; " + html.escape(t) if t[0].isdigit() else ""}</dt>'
-                f'<dd>{html.escape(task)}</dd></div>'
-                for kind, t, task in rows)
+        rd, vw = hours.get(wnum, (None, None))
+        if rd:
+            def slot(kind, v):
+                return (f'<span class="slot"><b>{kind}</b> {html.escape(v)} h</span>'
+                        if v and v[0].isdigit() else
+                        f'<span class="slot none"><b>{kind}</b> none</span>')
+            total = sum(float(v) for v in (rd, vw) if v and v[0].isdigit())
             rv = (f'<section class="review"><h2>Review before class'
-                  f'<span class="hrs">{hrs:.2f} h</span></h2>'
+                  f'<span class="hrs">{total:.2f} h</span></h2>'
+                  f'<p class="slots">{slot("Reading", rd)}{slot("Viewing", vw)}</p>'
                   f'<p class="rvnote">Material is provided in class. This is on top of the '
-                  f'lesson, the lab and the assignment.</p><dl>{dl}</dl></section>')
+                  f'lesson, the lab and the assignment.</p>'
+                  f'<div class="standing">{standing_html}'
+                  f'<p class="gl">Terms are in the '
+                  f'<a href="../reference/glossary.html">Glossary</a>, by module.</p>'
+                  f'</div></section>')
         else:
             rv = ('<section class="review"><h2>Review before class</h2>'
-                  '<p class="rvnote">No set review this phase — the weeks are production. '
+                  '<p class="rvnote">No set review this phase — these weeks are production. '
                   'The reading time stated in the lesson still applies.</p></section>')
 
         body = (f'<h1>Week {wnum}<span class="sub">{html.escape(wtitle)}</span></h1>'
@@ -408,10 +416,17 @@ ul.weeks .c{white-space:nowrap}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
-.review dl{margin:0;display:flex;flex-direction:column;gap:.6rem}
-.review dl div{background:var(--panel);border:1px solid var(--rule);padding:.8rem 1rem}
-.review dt{font-weight:700;font-size:.9rem;margin-bottom:.25rem}
-.review dd{margin:0;color:var(--soft);font-size:.95rem;max-width:60ch}
+.slots{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 .8rem}
+.slot{background:var(--panel);border:1px solid var(--rule);padding:.4rem .8rem;font-size:.92rem}
+.slot b{color:var(--accent);font-weight:700;margin-right:.35rem}
+.slot.none{color:var(--faint)}
+.slot.none b{color:var(--faint)}
+.standing{border-left:3px solid var(--accent);padding-left:1.1rem;margin-top:1rem}
+.standing blockquote{margin:0;padding:0;border:0}
+.standing p{margin:0 0 .7rem;font-size:.95rem;color:var(--soft);max-width:62ch}
+.standing p:last-child{margin-bottom:0}
+.standing .gl{margin-top:.9rem;font-size:.9rem}
+.standing strong{color:var(--ink)}
 
 .doc{font-size:1.02rem}
 .doc h1{font-size:clamp(1.7rem,5vw,2.4rem)}
