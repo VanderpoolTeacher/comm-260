@@ -86,6 +86,27 @@ def first_h1(text):
     return m.group(1).strip() if m else None
 
 
+def parse_review():
+    """Per-week reading and viewing expectations, from the design document."""
+    doc = DESIGN / "readings-and-viewings.md"
+    if not doc.exists():
+        return {}
+    out, week = {}, None
+    for line in doc.read_text().split("\n"):
+        m = re.match(r"^### Week (\d+) ·", line)
+        if m:
+            week = int(m.group(1))
+            out[week] = []
+            continue
+        if line.startswith("**Selecting the material."):
+            week = None
+            continue
+        m = re.match(r"^\| \*\*(Reading|Viewing)\*\* \| (.*?) \| (.*?) \|\s*$", line)
+        if m and week:
+            out[week].append((m.group(1), m.group(2).strip(), m.group(3).strip()))
+    return out
+
+
 def collect():
     """Map every publishable source file to its output path in docs/."""
     pub = {}
@@ -217,6 +238,7 @@ def main():
     (DOCS / "style.css").write_text(STYLE)
 
     pub, weeks = collect()
+    review = parse_review()
     kept = unwrapped = pages = 0
     index_rows = []
 
@@ -257,8 +279,26 @@ def main():
         )
         crumb = (f'<nav class="crumb"><a href="../index.html">All weeks</a>'
                  f'<span>/</span><em>Week {wnum}</em></nav>')
+
+        rows = review.get(wnum, [])
+        if rows:
+            hrs = sum(float(t.split()[0]) for _, t, _ in rows if t[0].isdigit())
+            dl = "".join(
+                f'<div><dt>{html.escape(kind)}'
+                f'{" &middot; " + html.escape(t) if t[0].isdigit() else ""}</dt>'
+                f'<dd>{html.escape(task)}</dd></div>'
+                for kind, t, task in rows)
+            rv = (f'<section class="review"><h2>Review before class'
+                  f'<span class="hrs">{hrs:.2f} h</span></h2>'
+                  f'<p class="rvnote">Material is provided in class. This is on top of the '
+                  f'lesson, the lab and the assignment.</p><dl>{dl}</dl></section>')
+        else:
+            rv = ('<section class="review"><h2>Review before class</h2>'
+                  '<p class="rvnote">No set review this phase — the weeks are production. '
+                  'The reading time stated in the lesson still applies.</p></section>')
+
         body = (f'<h1>Week {wnum}<span class="sub">{html.escape(wtitle)}</span></h1>'
-                f'<ul class="cards">{lis}</ul>')
+                f'<ul class="cards">{lis}</ul>{rv}')
         write(f"{wdir.name}/index.html", page(f"Week {wnum}", crumb, body, 1))
         index_rows.append((wdir.name, wnum, wtitle, len(cards)))
         pages += 1
@@ -360,6 +400,18 @@ ul.weeks a:hover,ul.cards a:hover{border-color:var(--accent)}
 .c{color:var(--faint);font-size:.85rem}
 ul.weeks .c{white-space:nowrap}
 .kind{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;min-width:9ch}
+
+.review{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
+.review h2{display:flex;flex-wrap:wrap;gap:.6rem;align-items:baseline;
+  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);font-weight:400;margin:0 0 .5rem}
+.review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
+  text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
+.rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
+.review dl{margin:0;display:flex;flex-direction:column;gap:.6rem}
+.review dl div{background:var(--panel);border:1px solid var(--rule);padding:.8rem 1rem}
+.review dt{font-weight:700;font-size:.9rem;margin-bottom:.25rem}
+.review dd{margin:0;color:var(--soft);font-size:.95rem;max-width:60ch}
 
 .doc{font-size:1.02rem}
 .doc h1{font-size:clamp(1.7rem,5vw,2.4rem)}
