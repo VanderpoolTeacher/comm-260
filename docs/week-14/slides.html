@@ -12,7 +12,7 @@
 </header>
 <main>
 <nav class="crumb"><a href="../index.html">All weeks</a><span>/</span><a href="index.html">Week 14</a><span>/</span><em>Slides</em></nav>
-<h1>Week 14 slides<span class="sub">Phase 3 — Video</span></h1><p class="rvnote">What was on screen in class. Arrow keys or click to move.</p><div class="deck" id="deck" tabindex="0"><section class="slide"><p class="sn">1 / 12</p><h2>Title</h2><div class="sbody"><h1 id="week-14--phase-3">Week 14 — Phase 3</h1>
+<h1>Week 14 slides<span class="sub">Phase 3 — Video</span></h1><p class="rvnote">What was on screen in class. Arrow keys or click to move.</p><div class="deckwrap" id="deckwrap"><div class="deck" id="deck" tabindex="0"><section class="slide"><p class="sn">1 / 12</p><h2>Title</h2><div class="sbody"><h1 id="week-14--phase-3">Week 14 — Phase 3</h1>
 <h2 id="video">Video</h2>
 <p><strong>Formative checkpoint · component D · 15% of the
 project</strong></p>
@@ -145,7 +145,7 @@ nobody is on campus.</h1>
 id="do-not-plan-to-shoot-during-the-break-unless-your-subject-has-already-confirmed">Do
 not plan to shoot during the break unless your subject has already
 confirmed.</h1>
-</div></section></div><div class="dhud"><button type="button" id="prev">&larr; Back</button><span id="dcount"></span><button type="button" id="next">Next &rarr;</button></div>
+</div></section></div><div class="dhud"><button type="button" id="prev">&larr; Back</button><span id="dcount"></span><span class="dright"><button type="button" id="fs">Full screen</button><button type="button" id="next">Next &rarr;</button></span></div></div>
 <script>
 (function(){
   var d=document.getElementById('deck');
@@ -163,6 +163,15 @@ confirmed.</h1>
   d.addEventListener('click',function(){show(i+1);});
   document.getElementById('next').addEventListener('click',function(e){e.stopPropagation();show(i+1);});
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
+  var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
+  function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  fsb.addEventListener('click',function(e){ e.stopPropagation();
+    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
+    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
+    document.addEventListener(ev,function(){
+      fsb.textContent=inFS()?'Exit full screen':'Full screen';
+      if(inFS()) d.focus();});});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

@@ -124,7 +124,8 @@ def build_deck(wdir, wnum, wtitle, asset_files):
         assets.append((tag.group(1) if tag else "NONE", fn,
                        (alt.group(1).strip() if alt else "")))
 
-    html_chunks = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens)).split(SLIDE_SPLIT)
+    html_chunks = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens),
+                             fmt="gfm+hard_line_breaks").split(SLIDE_SPLIT)
     cards = []
     for i, (title, frag) in enumerate(zip(titles, html_chunks)):
         tag, fn, alt = assets[i]
@@ -264,9 +265,9 @@ def rewrite(text, src_file, out_path, pub):
     return LINK_RE.sub(sub, text), stats
 
 
-def md_to_html(text):
+def md_to_html(text, fmt="gfm"):
     out = subprocess.run(
-        ["pandoc", "-f", "gfm", "-t", "html5", "--no-highlight"],
+        ["pandoc", "-f", fmt, "-t", "html5", "--no-highlight"],
         input=text, capture_output=True, text=True, check=True,
     )
     # let wide tables scroll inside their own container
@@ -369,10 +370,14 @@ def main():
             dbody = (f'<h1>Week {wnum} slides<span class="sub">{html.escape(wtitle)}</span></h1>'
                      f'<p class="rvnote">What was on screen in class. '
                      f'Arrow keys or click to move.</p>'
+                     f'<div class="deckwrap" id="deckwrap">'
                      f'<div class="deck" id="deck" tabindex="0">{slides_html}</div>'
                      f'<div class="dhud"><button type="button" id="prev">&larr; Back</button>'
                      f'<span id="dcount"></span>'
-                     f'<button type="button" id="next">Next &rarr;</button></div>'
+                     f'<span class="dright">'
+                     f'<button type="button" id="fs">Full screen</button>'
+                     f'<button type="button" id="next">Next &rarr;</button></span></div>'
+                     f'</div>'
                      f'{DECK_JS}')
             write(f"{wdir.name}/slides.html", page(f"Week {wnum} slides", crumbd, dbody, 1))
             pages += 1
@@ -480,6 +485,15 @@ DECK_JS = """
   d.addEventListener('click',function(){show(i+1);});
   document.getElementById('next').addEventListener('click',function(e){e.stopPropagation();show(i+1);});
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
+  var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
+  function inFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  fsb.addEventListener('click',function(e){ e.stopPropagation();
+    if(inFS()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }
+    else { (wrap.requestFullscreen||wrap.webkitRequestFullscreen).call(wrap); }});
+  ['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){
+    document.addEventListener(ev,function(){
+      fsb.textContent=inFS()?'Exit full screen':'Full screen';
+      if(inFS()) d.focus();});});
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;
@@ -567,6 +581,19 @@ ul.weeks .c{white-space:nowrap}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
 .spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint);font-style:italic}
+.deckwrap{display:flex;flex-direction:column;gap:.8rem}
+.deckwrap:fullscreen{background:var(--ground);padding:3vmin;gap:2vmin;justify-content:stretch}
+.deckwrap:-webkit-full-screen{background:var(--ground);padding:3vmin}
+.deckwrap:fullscreen .deck{flex:1;min-height:0;overflow:auto}
+.deckwrap:fullscreen .slide.on{justify-content:center;padding:4vmin}
+.deckwrap:fullscreen .sn{font-size:1.1vmin;letter-spacing:.3em}
+.deckwrap:fullscreen .deck h2{font-size:clamp(1rem,2vw,1.8rem)}
+.deckwrap:fullscreen .sbody{font-size:clamp(1.1rem,2.2vw,2rem)}
+.deckwrap:fullscreen .sbody h1{font-size:clamp(2rem,5.2vw,5rem)}
+.deckwrap:fullscreen .sbody h2,.deckwrap:fullscreen .sbody h3{font-size:clamp(1.3rem,3vw,2.4rem)}
+.deckwrap:fullscreen .sbody p,.deckwrap:fullscreen .sbody li{max-width:44ch}
+.deckwrap:fullscreen .sfig img{max-width:min(70rem,86vw);max-height:52vh;object-fit:contain}
+.dright{display:flex;gap:.5rem}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
 .dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
   color:var(--ink);border:1px solid var(--rule);cursor:pointer}

@@ -76,6 +76,19 @@ ul.weeks .c{white-space:nowrap}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
 .spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint);font-style:italic}
+.deckwrap{display:flex;flex-direction:column;gap:.8rem}
+.deckwrap:fullscreen{background:var(--ground);padding:3vmin;gap:2vmin;justify-content:stretch}
+.deckwrap:-webkit-full-screen{background:var(--ground);padding:3vmin}
+.deckwrap:fullscreen .deck{flex:1;min-height:0;overflow:auto}
+.deckwrap:fullscreen .slide.on{justify-content:center;padding:4vmin}
+.deckwrap:fullscreen .sn{font-size:1.1vmin;letter-spacing:.3em}
+.deckwrap:fullscreen .deck h2{font-size:clamp(1rem,2vw,1.8rem)}
+.deckwrap:fullscreen .sbody{font-size:clamp(1.1rem,2.2vw,2rem)}
+.deckwrap:fullscreen .sbody h1{font-size:clamp(2rem,5.2vw,5rem)}
+.deckwrap:fullscreen .sbody h2,.deckwrap:fullscreen .sbody h3{font-size:clamp(1.3rem,3vw,2.4rem)}
+.deckwrap:fullscreen .sbody p,.deckwrap:fullscreen .sbody li{max-width:44ch}
+.deckwrap:fullscreen .sfig img{max-width:min(70rem,86vw);max-height:52vh;object-fit:contain}
+.dright{display:flex;gap:.5rem}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
 .dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
   color:var(--ink);border:1px solid var(--rule);cursor:pointer}
