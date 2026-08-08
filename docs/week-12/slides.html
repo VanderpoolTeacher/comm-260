@@ -223,6 +223,17 @@ count.</strong></p>
     document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
+  d.addEventListener('click',function(e){
+    var b=e.target.closest('.opt'); if(!b) return;
+    e.stopPropagation();
+    var box=b.closest('.check'), fb=box.querySelector('.qfb'),
+        ok=b.dataset.k===box.dataset.answer;
+    box.querySelectorAll('.opt').forEach(function(o){o.classList.remove('picked');});
+    b.classList.add('picked');
+    box.classList.toggle('right',ok); box.classList.toggle('wrong',!ok);
+    var t=b.dataset.fb.replace(/^(Right|Yes|Correct)[.,]?\s*/i,'');
+    fb.innerHTML='<b>'+(ok?'Yes.':'Not this one.')+'</b> '+t;
+  },true);
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;

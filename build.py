@@ -88,6 +88,45 @@ def first_h1(text):
 
 SLIDE_SPLIT = "<!--SLIDE-->"
 
+OPT_RE = re.compile(r"\b([A-D])\s*·\s*")
+
+
+def inline_md(t):
+    """Minimal inline markdown for feedback text. Italics are barred on slides."""
+    t = html.escape(t)
+    t = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+    t = re.sub(r"\*(.+?)\*", r"\1", t)
+    t = re.sub(r"`(.+?)`", r"<code>\1</code>", t)
+    return t
+
+
+def parse_check(chunk, screen):
+    """A single-answer check: options, the key, and per-option feedback.
+
+    All three are authored in the slide spec. WATCH FOR is the instructor's
+    note on the question and is never published.
+    """
+    if "[CHECK]" not in chunk:
+        return None, screen
+    key = re.search(r"\[CHECK\][^\n]*?\*\*([A-D])\*\*", chunk)
+    fb = {k: v.strip() for k, _tick, v in
+          re.findall(r"^\|\s*\*{0,2}([A-D])\*{0,2}\s*(✅)?\s*\|\s*(.+?)\s*\|$", chunk, re.M)}
+    if not key or not fb:
+        return None, screen
+
+    opts, kept = [], []
+    for line in screen.split("\n"):
+        marks = list(OPT_RE.finditer(line))
+        if marks and line.lstrip().startswith(tuple("ABCD")):
+            for j, m in enumerate(marks):
+                end = marks[j + 1].start() if j + 1 < len(marks) else len(line)
+                opts.append((m.group(1), line[m.end():end].strip(" ·")))
+        else:
+            kept.append(line)
+    if not opts:
+        return None, screen
+    return {"answer": key.group(1), "opts": opts, "fb": fb}, "\n".join(kept).strip()
+
 
 def build_deck(wdir, wnum, wtitle, asset_files):
     """Student-visible slides: the ON SCREEN layer only.
@@ -103,7 +142,7 @@ def build_deck(wdir, wnum, wtitle, asset_files):
     if not chunks:
         return None
 
-    titles, screens, assets = [], [], []
+    titles, screens, assets, checks = [], [], [], []
     for c in chunks:
         head = c.split("\n", 1)[0].strip()
         titles.append(re.sub(r"^\d+\s*·\s*", "", head))
@@ -120,7 +159,9 @@ def build_deck(wdir, wnum, wtitle, asset_files):
             elif l.strip() == ">":
                 keep.append("")
             # anything unquoted is a stage direction and is dropped
-        screens.append("\n".join(keep).strip())
+        chk, body = parse_check(c, "\n".join(keep).strip())
+        checks.append(chk)
+        screens.append(body)
 
         tag = re.search(r"\*\*ASSET\*\*\s*·\s*`(\w+)`", c)
         num = re.search(r"image prompt \*\*(\d+)\.(\d+)\*\*", c)
@@ -151,8 +192,18 @@ def build_deck(wdir, wnum, wtitle, asset_files):
         first = re.search(r"<h[1-6][^>]*>(.*?)</h[1-6]>", frag, re.S)
         dup = first and norm(re.sub(r"<[^>]+>", "", first.group(1))) == norm(title)
         eyebrow = "" if dup else f'<h2>{html.escape(title)}</h2>'
+        chk = checks[i]
+        quiz = ""
+        if chk:
+            btns = "".join(
+                f'<button type="button" class="opt" data-k="{k}" '
+                f'data-fb="{html.escape(inline_md(chk["fb"].get(k, "")), quote=True)}">'
+                f'<b>{k}</b><span>{inline_md(t)}</span></button>'
+                for k, t in chk["opts"])
+            quiz = (f'<div class="check" data-answer="{chk["answer"]}">{btns}'
+                    f'<p class="qfb" role="status" aria-live="polite"></p></div>')
         cards.append(f'<section class="slide"><p class="sn">{i+1} / {len(titles)}</p>'
-                     f'{eyebrow}<div class="sbody">{frag}</div>{media}</section>')
+                     f'{eyebrow}<div class="sbody">{frag}</div>{quiz}{media}</section>')
     return "\n".join(cards), len(titles)
 
 
@@ -335,6 +386,7 @@ def main():
 
     pub, weeks = collect()
     hours, standing = parse_review()
+    WEEK_TITLES = {}
     assets = parse_assets()
     asset_names = sorted(p.name for p in (SRC / 'assets').iterdir()
                      if p.suffix.lower() in ('.svg', '.jpg', '.jpeg', '.png')) if (SRC / 'assets').is_dir() else []
@@ -396,7 +448,8 @@ def main():
                      f'{DECK_JS}')
             write(f"{wdir.name}/slides.html", page(f"Week {wnum} slides", crumbd, dbody, 1))
             pages += 1
-            cards.insert(0, ("slides.html", "Slides", f"{nslides} slides from class"))
+            after = next((n for n, c in enumerate(cards) if c[1] == "Lesson"), -1) + 1
+            cards.insert(after, ("slides.html", "Slides", f"{nslides} slides from class"))
 
         lis = "\n".join(
             f'<li><a href="{h}"><span class="kind">{html.escape(k)}</span>'
@@ -436,10 +489,36 @@ def main():
                 f'<ul class="cards">{lis}</ul>{dia}{rv}')
         write(f"{wdir.name}/index.html", page(f"Week {wnum}", crumb, body, 1))
         index_rows.append((wdir.name, wnum, wtitle, len(cards)))
+        WEEK_TITLES[wnum] = wtitle
+        pages += 1
+
+    # review list — one page collecting every week's expectation
+    if hours:
+        trs = "".join(
+            f'<tr><td class="n">{w}</td>'
+            f'<td><a href="../week-{w:02d}/index.html">{html.escape(WEEK_TITLES.get(w, ""))}</a></td>'
+            f'<td class="n">{sum(float(v) for v in hours[w] if v and v[0].isdigit()):.2f} h</td></tr>'
+            for w in sorted(hours))
+        tot = sum(sum(float(v) for v in hours[w] if v and v[0].isdigit()) for w in hours)
+        body = (
+            '<h1>Review list<span class="sub">What to read, watch and listen to, week by week</span></h1>'
+            '<p class="lede">Material is provided in class. This is on top of the lesson, the lab and '
+            'the assignment. Weeks 12&ndash;15 set no review &mdash; those weeks are production.</p>'
+            f'<div class="standing">{standing_html}'
+            '<p class="gl">Terms are in the <a href="glossary.html">Glossary</a>, by module.</p></div>'
+            '<h2 class="sec">Hours by week</h2>'
+            f'<div class="scroll"><table class="rvt"><thead><tr><th>Week</th><th>Topic</th>'
+            f'<th>Review</th></tr></thead><tbody>{trs}'
+            f'<tr><td></td><td><b>Total</b></td><td class="n"><b>{tot:.2f} h</b></td></tr>'
+            '</tbody></table></div>')
+        crumb = ('<nav class="crumb"><a href="../index.html">Course home</a>'
+                 '<span>/</span><em>Review list</em></nav>')
+        write("reference/review-list.html", page("Review list", crumb, body, 1))
         pages += 1
 
     # reference documents
-    ref_rows = []
+    ref_rows = [("reference/review-list.html", "Review list",
+                 "Every week's reading and viewing, and what to do with it.")] if hours else []
     for rel, out, label, blurb in REFERENCE:
         f = DESIGN / rel
         if not f.exists():
@@ -517,6 +596,17 @@ DECK_JS = """
     document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
+  d.addEventListener('click',function(e){
+    var b=e.target.closest('.opt'); if(!b) return;
+    e.stopPropagation();
+    var box=b.closest('.check'), fb=box.querySelector('.qfb'),
+        ok=b.dataset.k===box.dataset.answer;
+    box.querySelectorAll('.opt').forEach(function(o){o.classList.remove('picked');});
+    b.classList.add('picked');
+    box.classList.toggle('right',ok); box.classList.toggle('wrong',!ok);
+    var t=b.dataset.fb.replace(/^(Right|Yes|Correct)[.,]?\\s*/i,'');
+    fb.innerHTML='<b>'+(ok?'Yes.':'Not this one.')+'</b> '+t;
+  },true);
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;
@@ -603,6 +693,22 @@ ul.weeks .c{white-space:nowrap}
 .sfig{margin-top:.8rem}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
+.check{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 0;width:100%}
+.opt{display:flex;gap:.7rem;align-items:baseline;text-align:left;font:inherit;
+  padding:.6rem .85rem;background:var(--ground);color:var(--ink);
+  border:1px solid var(--rule);cursor:pointer;width:100%}
+.opt:hover{border-color:var(--accent)}
+.opt b{color:var(--accent);min-width:1.2em}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.check.right .opt.picked{border-color:var(--accent);background:rgba(47,93,80,.10)}
+.check.wrong .opt.picked{border-color:var(--alert);background:rgba(122,59,82,.10)}
+.qfb{margin:.3rem 0 0;font-size:.95rem;line-height:1.5;color:var(--soft)}
+.qfb:empty{display:none}
+.check.right .qfb b{color:var(--accent)}
+.check.wrong .qfb b{color:var(--alert)}
+.deckwrap.presenting .check{width:min(74vw,1180px);margin:2vmin auto 0;gap:1vmin}
+.deckwrap.presenting .opt{font-size:2.6vmin;padding:1.4vmin 2vmin}
+.deckwrap.presenting .qfb{font-size:2.4vmin}
 .cred{margin:.4rem 0 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
 .deckwrap.presenting .cred{font-size:1.5vmin}
 .doc figcaption,.doc .cred{color:var(--faint);font-size:.85rem}

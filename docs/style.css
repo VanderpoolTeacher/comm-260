@@ -75,6 +75,22 @@ ul.weeks .c{white-space:nowrap}
 .sfig{margin-top:.8rem}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
+.check{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 0;width:100%}
+.opt{display:flex;gap:.7rem;align-items:baseline;text-align:left;font:inherit;
+  padding:.6rem .85rem;background:var(--ground);color:var(--ink);
+  border:1px solid var(--rule);cursor:pointer;width:100%}
+.opt:hover{border-color:var(--accent)}
+.opt b{color:var(--accent);min-width:1.2em}
+.opt.picked{border-color:var(--ink);border-width:2px}
+.check.right .opt.picked{border-color:var(--accent);background:rgba(47,93,80,.10)}
+.check.wrong .opt.picked{border-color:var(--alert);background:rgba(122,59,82,.10)}
+.qfb{margin:.3rem 0 0;font-size:.95rem;line-height:1.5;color:var(--soft)}
+.qfb:empty{display:none}
+.check.right .qfb b{color:var(--accent)}
+.check.wrong .qfb b{color:var(--alert)}
+.deckwrap.presenting .check{width:min(74vw,1180px);margin:2vmin auto 0;gap:1vmin}
+.deckwrap.presenting .opt{font-size:2.6vmin;padding:1.4vmin 2vmin}
+.deckwrap.presenting .qfb{font-size:2.4vmin}
 .cred{margin:.4rem 0 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
 .deckwrap.presenting .cred{font-size:1.5vmin}
 .doc figcaption,.doc .cred{color:var(--faint);font-size:.85rem}

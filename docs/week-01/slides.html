@@ -31,12 +31,7 @@ Digital Media Production</h3>
 
 <p><strong>Which of these is a named choice, not a
 preference?</strong></p>
-<p>A · "The colour grading is really nice"<br />
-B · "The shallow depth of field isolates him from the
-crowd"<br />
-C · "It feels calm and peaceful"<br />
-D · "I love the composition"</p>
-</div></section>
+</div><div class="check" data-answer="B"><button type="button" class="opt" data-k="A" data-fb="Names a technique and stops. No effect stated — a preference wearing a lab coat."><b>A</b><span>&quot;The colour grading is really nice&quot;</span></button><button type="button" class="opt" data-k="B" data-fb="Right. It says what the maker &lt;strong&gt;did&lt;/strong&gt; and what it &lt;strong&gt;accomplished&lt;/strong&gt;. Two halves."><b>B</b><span>&quot;The shallow depth of field isolates him from the crowd&quot;</span></button><button type="button" class="opt" data-k="C" data-fb="A feeling. Yours, not the photograph&amp;#x27;s."><b>C</b><span>&quot;It feels calm and peaceful&quot;</span></button><button type="button" class="opt" data-k="D" data-fb="Composition is a category, not a decision. Which decision?"><b>D</b><span>&quot;I love the composition&quot;</span></button><p class="qfb" role="status" aria-live="polite"></p></div></section>
 <section class="slide"><p class="sn">5 / 26</p><div class="sbody">
 
 <h1 id="this-week">This week</h1>
@@ -93,8 +88,7 @@ on its own.</p>
 <section class="slide"><p class="sn">10 / 26</p><h2>Check — what is doing the work?</h2><div class="sbody">
 
 <p><strong>What is making the subject read first here?</strong></p>
-<p>A · Focus · B · Light · C · Colour</p>
-</div><div class="sfig"><img src="../assets/01-4-light-does-the-work.jpg" alt="Note that all planes are sharp, and where the light falls." loading="lazy"><p class="cred">Generated image</p></div></section>
+</div><div class="check" data-answer="B"><button type="button" class="opt" data-k="A" data-fb="Look again — the background is as sharp as the subject."><b>A</b><span>Focus</span></button><button type="button" class="opt" data-k="B" data-fb="Everything here is sharp. It is the light doing it."><b>B</b><span>Light</span></button><button type="button" class="opt" data-k="C" data-fb="Check saturation across the frame. It is even."><b>C</b><span>Colour</span></button><p class="qfb" role="status" aria-live="polite"></p></div><div class="sfig"><img src="../assets/01-4-light-does-the-work.jpg" alt="Note that all planes are sharp, and where the light falls." loading="lazy"><p class="cred">Generated image</p></div></section>
 <section class="slide"><p class="sn">11 / 26</p><div class="sbody">
 
 <h1 id="this-has-a-name">This has a name</h1>
@@ -136,11 +130,7 @@ taken to do otherwise?</h2>
 
 <p><strong>A documentary is shot handheld throughout, in a cramped flat,
 at night. Deliberate choice, or default?</strong></p>
-<p>A · Deliberate — it creates urgency<br />
-B · Default — no room for a tripod, and it was dark<br />
-C · Cannot be settled from the piece alone — but doing otherwise would
-have needed lighting and space they plainly did not have</p>
-</div><div class="sfig"><img src="../assets/01-5-handheld-low-light.jpg" alt="Describe the conditions, not the verdict." loading="lazy"><p class="cred">Generated image</p></div></section>
+</div><div class="check" data-answer="C"><button type="button" class="opt" data-k="A" data-fb="Possible — but what would the alternative have required?"><b>A</b><span>Deliberate — it creates urgency</span></button><button type="button" class="opt" data-k="B" data-fb="Probably true, and stated too confidently. You cannot know they had no tripod."><b>B</b><span>Default — no room for a tripod, and it was dark</span></button><button type="button" class="opt" data-k="C" data-fb="You are not graded on guessing intent. You are graded on knowing what doing otherwise would have taken."><b>C</b><span>Cannot be settled from the piece alone — but doing otherwise would have needed lighting and space they plainly did not have</span></button><p class="qfb" role="status" aria-live="polite"></p></div><div class="sfig"><img src="../assets/01-5-handheld-low-light.jpg" alt="Describe the conditions, not the verdict." loading="lazy"><p class="cred">Generated image</p></div></section>
 <section class="slide"><p class="sn">19 / 26</p><div class="sbody">
 
 <h1 id="you-are-not-graded-on-guessing-intent">You are not graded on
@@ -162,11 +152,7 @@ context</strong></p>
 
 <p><strong>A photographer crops tight to a pair of hands working. What
 did it cost?</strong></p>
-<p>A · Nothing — it is a stronger image<br />
-B · The room. You no longer know where this is or who else is
-there.<br />
-C · Sharpness</p>
-</div></section>
+</div><div class="check" data-answer="B"><button type="button" class="opt" data-k="A" data-fb="Every choice costs something. Find it."><b>A</b><span>Nothing — it is a stronger image</span></button><button type="button" class="opt" data-k="B" data-fb="Naming what a choice accomplishes makes you observant. Naming what it &lt;strong&gt;cost&lt;/strong&gt; makes you a producer."><b>B</b><span>The room. You no longer know where this is or who else is there.</span></button><button type="button" class="opt" data-k="C" data-fb="Cropping does not change sharpness."><b>C</b><span>Sharpness</span></button><p class="qfb" role="status" aria-live="polite"></p></div></section>
 <section class="slide"><p class="sn">22 / 26</p><h2>Observant, or a producer</h2><div class="sbody">
 
 <h1 id="naming-what-a-choice-accomplishes-makes-you-observant">Naming
@@ -232,6 +218,17 @@ alternative would have cost.</strong></p>
     document.addEventListener(ev,function(){ if(!inFS()) paint(false); });});
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'&&wrap.classList.contains('presenting')) paint(false);});
+  d.addEventListener('click',function(e){
+    var b=e.target.closest('.opt'); if(!b) return;
+    e.stopPropagation();
+    var box=b.closest('.check'), fb=box.querySelector('.qfb'),
+        ok=b.dataset.k===box.dataset.answer;
+    box.querySelectorAll('.opt').forEach(function(o){o.classList.remove('picked');});
+    b.classList.add('picked');
+    box.classList.toggle('right',ok); box.classList.toggle('wrong',!ok);
+    var t=b.dataset.fb.replace(/^(Right|Yes|Correct)[.,]?\s*/i,'');
+    fb.innerHTML='<b>'+(ok?'Yes.':'Not this one.')+'</b> '+t;
+  },true);
   var x=null;
   d.addEventListener('touchstart',function(e){x=e.changedTouches[0].clientX;},{passive:true});
   d.addEventListener('touchend',function(e){ if(x===null)return;
