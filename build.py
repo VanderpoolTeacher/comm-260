@@ -129,8 +129,9 @@ def build_deck(wdir, wnum, wtitle, asset_files):
         if num:
             want = f"{int(num.group(1)):02d}-{num.group(2)}-"
             fn = next((a for a in asset_files if a.startswith(want)), None)
+        gen = bool(re.search(r"\*\(generated\)\*", c))
         assets.append((tag.group(1) if tag else "NONE", fn,
-                       (alt.group(1).strip() if alt else "")))
+                       (alt.group(1).strip() if alt else ""), gen))
 
     rendered = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens),
                           fmt="gfm+hard_line_breaks")
@@ -138,11 +139,12 @@ def build_deck(wdir, wnum, wtitle, asset_files):
     html_chunks = rendered.split(SLIDE_SPLIT)
     cards = []
     for i, (title, frag) in enumerate(zip(titles, html_chunks)):
-        tag, fn, alt = assets[i]
+        tag, fn, alt, gen = assets[i]
         media = ""
         if fn:
+            cred = '<p class="cred">Generated image</p>' if gen else ""
             media = (f'<div class="sfig"><img src="../assets/{html.escape(fn)}" '
-                     f'alt="{html.escape(alt)}" loading="lazy"></div>')
+                     f'alt="{html.escape(alt)}" loading="lazy">{cred}</div>')
         elif tag in ("FIND", "SHOW", "MAKE", "GENERATE"):
             media = ('<p class="spend">Shown in class.</p>')
         norm = lambda x: re.sub(r"[^a-z0-9]", "", x.lower())
@@ -160,7 +162,7 @@ def parse_assets():
     if not adir.is_dir():
         return {}
     by_week = {}
-    for f in sorted(adir.glob("*.svg")):
+    for f in sorted(adir.glob("*.svg")):   # photographs belong to slides and lessons
         m = re.match(r"^(\d{2})-", f.name)
         if not m:
             continue
@@ -250,6 +252,8 @@ def rewrite(text, src_file, out_path, pub):
     stats = {"kept": 0, "unwrapped": 0}
 
     def sub(m):
+        if m.start() > 0 and text[m.start() - 1] == "!":
+            return m.group(0)          # an image; ../assets/… resolves identically in the site
         label, target = m.group(1), m.group(2)
         if target.startswith("#"):
             return m.group(0)
@@ -332,7 +336,8 @@ def main():
     pub, weeks = collect()
     hours, standing = parse_review()
     assets = parse_assets()
-    asset_names = sorted(p.name for p in (SRC / 'assets').glob('*.svg')) if (SRC / 'assets').is_dir() else []
+    asset_names = sorted(p.name for p in (SRC / 'assets').iterdir()
+                     if p.suffix.lower() in ('.svg', '.jpg', '.jpeg', '.png')) if (SRC / 'assets').is_dir() else []
     adir = SRC / 'assets'
     if adir.is_dir():
         shutil.copytree(adir, DOCS / 'assets', dirs_exist_ok=True)
@@ -598,6 +603,9 @@ ul.weeks .c{white-space:nowrap}
 .sfig{margin-top:.8rem}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
+.cred{margin:.4rem 0 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.deckwrap.presenting .cred{font-size:1.5vmin}
+.doc figcaption,.doc .cred{color:var(--faint);font-size:.85rem}
 .spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint)}
 .deckwrap{display:flex;flex-direction:column;gap:.8rem}
 body.presenting{overflow:hidden}

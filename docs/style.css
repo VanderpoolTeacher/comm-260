@@ -75,6 +75,9 @@ ul.weeks .c{white-space:nowrap}
 .sfig{margin-top:.8rem}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
+.cred{margin:.4rem 0 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.deckwrap.presenting .cred{font-size:1.5vmin}
+.doc figcaption,.doc .cred{color:var(--faint);font-size:.85rem}
 .spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint)}
 .deckwrap{display:flex;flex-direction:column;gap:.8rem}
 body.presenting{overflow:hidden}
