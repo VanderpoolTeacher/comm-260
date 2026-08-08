@@ -109,10 +109,18 @@ def build_deck(wdir, wnum, wtitle, asset_files):
         titles.append(re.sub(r"^\d+\s*·\s*", "", head))
         m = re.search(r"\*\*ON SCREEN\*\*\s*\n(.*?)"
                       r"(?=\n\*\*(?:ASSET|SAY|INTERACTION|WATCH FOR)\*\*|\n---)", c, re.S)
-        txt = (m.group(1).strip() if m else "")
-        txt = "\n".join(l[2:] if l.startswith("> ") else ("" if l.strip() == ">" else l)
-                        for l in txt.split("\n"))
-        screens.append(txt.strip())
+        raw = (m.group(1).strip() if m else "")
+        # Screen copy is authored as a blockquote. An unquoted block is a stage
+        # direction for the instructor ("Blank.", "Image A, full bleed") and is
+        # not shown to students — except any heading in it, which is screen copy.
+        keep = []
+        for l in raw.split("\n"):
+            if l.startswith("> "):
+                keep.append(l[2:])
+            elif l.strip() == ">":
+                keep.append("")
+            # anything unquoted is a stage direction and is dropped
+        screens.append("\n".join(keep).strip())
 
         tag = re.search(r"\*\*ASSET\*\*\s*·\s*`(\w+)`", c)
         num = re.search(r"image prompt \*\*(\d+)\.(\d+)\*\*", c)
@@ -590,7 +598,7 @@ ul.weeks .c{white-space:nowrap}
 .sfig{margin-top:.8rem}
 .sfig img{display:block;width:100%;max-width:34rem;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
-.spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint);font-style:italic}
+.spend{margin:.8rem 0 0;font-size:.88rem;color:var(--faint)}
 .deckwrap{display:flex;flex-direction:column;gap:.8rem}
 body.presenting{overflow:hidden}
 .deckwrap.presenting{position:fixed;inset:0;z-index:9999;width:100vw;height:100vh;
@@ -599,19 +607,25 @@ body.presenting{overflow:hidden}
   display:flex;align-items:center;justify-content:center}
 .deckwrap.presenting .slide{max-width:none}
 .deckwrap.presenting .slide.on{width:100%;height:100%;justify-content:center;
-  align-items:center;text-align:center;padding:2vmin 0;gap:1.5vmin;overflow:auto}
+  align-items:center;text-align:left;padding:2vmin 0;gap:1.5vmin;overflow:auto}
 .deckwrap.presenting .sn{font-size:1.6vmin;letter-spacing:.3em}
 .deckwrap.presenting .deck h2{font-size:2.4vmin}
 .deckwrap.presenting .sbody{font-size:3.4vmin}
 .deckwrap.presenting .sbody h1{font-size:7.5vmin;line-height:1.08;margin:.2em 0 .3em}
 .deckwrap.presenting .sbody h2,.deckwrap.presenting .sbody h3{font-size:4vmin}
-.deckwrap.presenting .sbody{width:100%;text-align:center}
-.deckwrap.presenting .sbody p,.deckwrap.presenting .sbody li{max-width:46ch;margin:.45em auto}
-.deckwrap.presenting .sbody ul,.deckwrap.presenting .sbody ol{padding:0;list-style-position:inside;
-  max-width:46ch;margin:.4em auto}
-.deckwrap.presenting .sbody blockquote{margin:.5em auto;max-width:46ch;border:0;padding:0}
+.deckwrap.presenting .sn,.deckwrap.presenting .deck h2,
+.deckwrap.presenting .sbody,.deckwrap.presenting .sfig,
+.deckwrap.presenting .spend{width:min(74vw,1180px);max-width:none;
+  margin-left:auto;margin-right:auto;text-align:left}
+.deckwrap.presenting .sbody{text-align:left}
+.deckwrap.presenting .sbody p,.deckwrap.presenting .sbody li{max-width:none;margin:.45em 0}
+.deckwrap.presenting .sbody ul,.deckwrap.presenting .sbody ol{padding-left:1.3em;margin:.4em 0}
+.deckwrap.presenting .sbody blockquote{margin:.5em 0;border:0;padding:0}
+.deckwrap.presenting .sbody table{margin:.6em 0;width:100%}
+.deckwrap.presenting .sbody th,.deckwrap.presenting .sbody td{padding:.45em .6em;font-size:.9em}
 .deckwrap.presenting .sfig{margin-top:2vmin}
-.deckwrap.presenting .sfig img{width:auto;height:auto;max-width:88vw;max-height:58vh;
+.deckwrap.presenting .sfig{max-width:none}
+.deckwrap.presenting .sfig img{width:auto;height:auto;max-width:86vw;max-height:56vh;
   margin:0 auto;border:0;background:transparent}
 .deckwrap.presenting .dhud{padding:0 1vmin}
 .deckwrap.presenting .spend{font-size:2vmin}
