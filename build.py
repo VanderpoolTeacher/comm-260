@@ -86,6 +86,27 @@ def first_h1(text):
     return m.group(1).strip() if m else None
 
 
+def parse_assets():
+    """The course diagrams, grouped by the week their number belongs to."""
+    adir = SRC / "assets"
+    if not adir.is_dir():
+        return {}
+    by_week = {}
+    for f in sorted(adir.glob("*.svg")):
+        m = re.match(r"^(\d{2})-", f.name)
+        if not m:
+            continue
+        text = f.read_text()
+        t = re.search(r"<title[^>]*>(.*?)</title>", text, re.S)
+        d = re.search(r"<desc[^>]*>(.*?)</desc>", text, re.S)
+        by_week.setdefault(int(m.group(1)), []).append((
+            f.name,
+            (t.group(1).strip() if t else f.stem),
+            (d.group(1).strip() if d else ""),
+        ))
+    return by_week
+
+
 def parse_review():
     """Per-week hours, and the standing expectation that applies to all of them."""
     doc = DESIGN / "readings-and-viewings.md"
@@ -242,6 +263,10 @@ def main():
 
     pub, weeks = collect()
     hours, standing = parse_review()
+    assets = parse_assets()
+    adir = SRC / 'assets'
+    if adir.is_dir():
+        shutil.copytree(adir, DOCS / 'assets', dirs_exist_ok=True)
     standing_html = md_to_html(standing) if standing else ""
     kept = unwrapped = pages = 0
     index_rows = []
@@ -300,8 +325,19 @@ def main():
                   '<p class="rvnote">No set review this phase — these weeks are production. '
                   'The reading time stated in the lesson still applies.</p></section>')
 
+        figs = assets.get(wnum, [])
+        dia = ""
+        if figs:
+            items = "".join(
+                f'<figure><img src="../assets/{html.escape(fn)}" alt="{html.escape(desc)}" '
+                f'loading="lazy"><figcaption>{html.escape(cap)}</figcaption></figure>'
+                for fn, cap, desc in figs)
+            dia = (f'<section class="diagrams"><h2>Diagrams</h2>'
+                   f'<p class="rvnote">From the lesson. Yours to keep &mdash; '
+                   f'print them, mark them up.</p>{items}</section>')
+
         body = (f'<h1>Week {wnum}<span class="sub">{html.escape(wtitle)}</span></h1>'
-                f'<ul class="cards">{lis}</ul>{rv}')
+                f'<ul class="cards">{lis}</ul>{dia}{rv}')
         write(f"{wdir.name}/index.html", page(f"Week {wnum}", crumb, body, 1))
         index_rows.append((wdir.name, wnum, wtitle, len(cards)))
         pages += 1
@@ -411,6 +447,14 @@ ul.weeks .c{white-space:nowrap}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
+.diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
+.diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);font-weight:400;margin:0 0 .5rem}
+.diagrams figure{margin:0 0 1.2rem}
+.diagrams img{display:block;width:100%;max-width:100%;height:auto;
+  background:#E9E6DE;border:1px solid var(--rule)}
+.diagrams figcaption{margin-top:.45rem;font-size:.88rem;color:var(--soft)}
+
 .standing{border-left:3px solid var(--accent);padding-left:1.1rem;margin-top:1rem}
 .standing blockquote{margin:0;padding:0;border:0}
 .standing p{margin:0 0 .7rem;font-size:.95rem;color:var(--soft);max-width:62ch}

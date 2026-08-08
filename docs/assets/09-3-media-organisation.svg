@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">Two ways to organise media</title>
+<desc id="d">Left, opens in six months: one project folder holding the project file and a media folder with bins named footage, audio and graphics. Right, dead next week: a project file on its own, with dotted lines running off the frame to desktop, phone, downloads and an external drive.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.ttl{font-size:34px}
+.l1{font-size:30px}
+.l2{font-size:26px}</style>
+<defs>
+<g id="fold"><path d="M0,40V6H18l6,6h32v28Z"/></g>
+<g id="foldsm"><path d="M0,34V5h15l5,5h28v24Z"/></g>
+<g id="file"><path d="M0,0h22l12,12v32H0Z"/><path d="M22,0v12h12"/></g>
+<g id="filebig"><path d="M0,0h28l16,16v42H0Z"/><path d="M28,0v16h16"/></g>
+</defs>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<text class="ttl" x="305" y="150" text-anchor="middle" fill="#2F5D50">opens in six months</text>
+<text class="ttl" x="1200" y="150" text-anchor="middle" fill="#7A3B52">dead next week</text>
+
+<!-- LEFT : one place, named bins -->
+<g fill="none" stroke="#2F5D50" stroke-width="3">
+<use href="#fold" transform="translate(150,230)"/>
+<use href="#file" transform="translate(213,320)"/>
+<use href="#fold" transform="translate(213,400)"/>
+<use href="#foldsm" transform="translate(285,470)"/>
+<use href="#foldsm" transform="translate(285,545)"/>
+<use href="#foldsm" transform="translate(285,620)"/>
+<path d="M178,272V420M178,342H213M178,420H213"/>
+<path d="M241,442V637M241,487H285M241,562H285M241,637H285"/>
+</g>
+<text class="l1" x="222" y="260">COMM 260 project</text>
+<text class="l2" x="262" y="352">project file</text>
+<text class="l2" x="282" y="430">media</text>
+<text class="l2" x="345" y="497">footage</text>
+<text class="l2" x="345" y="572">audio</text>
+<text class="l2" x="345" y="647">graphics</text>
+
+<!-- RIGHT : the file alone, everything else elsewhere -->
+<g fill="none" stroke="#7A3B52" stroke-width="2.5" stroke-dasharray="7 9">
+<path d="M1171.8,428.2 950,265"/>
+<path d="M1229.9,430.7 1460,290"/>
+<path d="M1230.8,465.6 1500,610"/>
+<path d="M1174.4,472.9 980,655"/>
+</g>
+<g fill="none" stroke="#7A3B52" stroke-width="3">
+<use href="#filebig" transform="translate(1178,420)"/>
+</g>
+<text class="l2" x="1215" y="532" text-anchor="middle">project file</text>
+<g class="l2" fill="#7A3B52">
+<text x="930" y="245" text-anchor="end">desktop</text>
+<text x="1480" y="270">phone</text>
+<text x="1490" y="650" text-anchor="end">external drive</text>
+<text x="960" y="690" text-anchor="end">downloads</text>
+</g>
+</svg>

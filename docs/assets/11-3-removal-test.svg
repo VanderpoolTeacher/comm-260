@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">The removal test</title>
+<desc id="d">Left, integrated: photo, audio and video drawn as three interlocking shapes, none complete on its own. Video is lifted away and the remaining two break apart, captioned removing one breaks the piece. Right, assembled: the same three as separate whole blocks. One is lifted away and the others are unchanged, captioned removing one changes nothing.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.ttl{font-size:38px}
+.cap{font-size:30px}
+.pc{font-size:26px;fill:#E9E6DE}
+.rm{font-size:20px}</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#1A1D1F"/>
+</marker>
+<mask id="mA" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900">
+<circle cx="325" cy="505" r="95" fill="#fff"/>
+<circle cx="475" cy="505" r="99" fill="#000"/>
+<circle cx="400" cy="375" r="99" fill="#000"/>
+</mask>
+<mask id="mB" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900">
+<circle cx="475" cy="505" r="95" fill="#fff"/>
+<circle cx="325" cy="505" r="99" fill="#000"/>
+<circle cx="400" cy="375" r="99" fill="#000"/>
+</mask>
+<mask id="mC" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900">
+<circle cx="400" cy="375" r="95" fill="#fff"/>
+<circle cx="325" cy="505" r="99" fill="#000"/>
+<circle cx="475" cy="505" r="99" fill="#000"/>
+</mask>
+</defs>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<text class="ttl" x="400" y="110" text-anchor="middle" fill="#2F5D50">integrated</text>
+<text class="ttl" x="1150" y="110" text-anchor="middle" fill="#7A3B52">assembled</text>
+
+<!-- LEFT : interlocking. Lift one and the rest are visibly incomplete. -->
+<circle cx="400" cy="375" r="95" fill="none" stroke="#2F5D50" stroke-width="2.5" stroke-dasharray="8 8" opacity="0.55"/>
+<g transform="translate(-25,0)"><g mask="url(#mA)"><circle cx="325" cy="505" r="95" fill="#2F5D50"/></g></g>
+<g transform="translate(25,0)"><g mask="url(#mB)"><circle cx="475" cy="505" r="95" fill="#2F5D50"/></g></g>
+<g transform="translate(0,-105)"><g mask="url(#mC)"><circle cx="400" cy="375" r="95" fill="#2F5D50"/></g></g>
+<text class="pc" x="280" y="545" text-anchor="middle">photo</text>
+<text class="pc" x="520" y="545" text-anchor="middle">audio</text>
+<text class="pc" x="400" y="250" text-anchor="middle">video</text>
+<path d="M530 400V285" stroke="#1A1D1F" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text class="rm" x="555" y="348">removed</text>
+<text class="cap" x="400" y="730" text-anchor="middle">removing one breaks the piece</text>
+
+<!-- RIGHT : separate. Lift one and nothing else changes. -->
+<rect x="1255" y="430" width="150" height="150" rx="12" fill="none" stroke="#7A3B52" stroke-width="2.5" stroke-dasharray="8 8" opacity="0.55"/>
+<g fill="#7A3B52">
+<rect x="895" y="430" width="150" height="150" rx="12"/>
+<rect x="1075" y="430" width="150" height="150" rx="12"/>
+<rect x="1255" y="250" width="150" height="150" rx="12"/>
+</g>
+<text class="pc" x="970" y="512" text-anchor="middle">photo</text>
+<text class="pc" x="1150" y="512" text-anchor="middle">audio</text>
+<text class="pc" x="1330" y="332" text-anchor="middle">video</text>
+<path d="M1440 500V300" stroke="#1A1D1F" stroke-width="2.5" fill="none" marker-end="url(#a)"/>
+<text class="rm" x="1465" y="408">removed</text>
+<text class="cap" x="1150" y="730" text-anchor="middle">removing one changes nothing</text>
+</svg>

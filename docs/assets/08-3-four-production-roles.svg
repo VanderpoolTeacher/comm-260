@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">Four production roles and what each one owns</title>
+<desc id="d">Four quadrants. Director owns what the shot is. Camera owns the image. Sound owns the recording. Producer owns the day, and is drawn heaviest.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.role{font-size:34px}
+.owns{font-size:46px}</style>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<!-- three outlined roles -->
+<g fill="none" stroke="#1A1D1F" stroke-width="3">
+<rect x="120" y="90" width="660" height="340"/>
+<rect x="820" y="90" width="660" height="340"/>
+<rect x="120" y="470" width="660" height="340"/>
+</g>
+
+<text class="role" x="450" y="195" text-anchor="middle">Director</text>
+<text class="owns" x="450" y="315" text-anchor="middle">What the shot is</text>
+
+<text class="role" x="1150" y="195" text-anchor="middle">Camera</text>
+<text class="owns" x="1150" y="315" text-anchor="middle">The image</text>
+
+<text class="role" x="450" y="575" text-anchor="middle">Sound</text>
+<text class="owns" x="450" y="695" text-anchor="middle">The recording</text>
+
+<!-- the producer, visually heaviest -->
+<rect x="820" y="470" width="660" height="340" fill="#2F5D50"/>
+<text class="role" x="1150" y="570" text-anchor="middle" fill="#E9E6DE">Producer</text>
+<text x="1150" y="720" text-anchor="middle" fill="#E9E6DE" font-size="76">The day</text>
+</svg>

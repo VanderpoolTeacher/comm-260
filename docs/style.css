@@ -59,6 +59,14 @@ ul.weeks .c{white-space:nowrap}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
+.diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
+.diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);font-weight:400;margin:0 0 .5rem}
+.diagrams figure{margin:0 0 1.2rem}
+.diagrams img{display:block;width:100%;max-width:100%;height:auto;
+  background:#E9E6DE;border:1px solid var(--rule)}
+.diagrams figcaption{margin-top:.45rem;font-size:.88rem;color:var(--soft)}
+
 .standing{border-left:3px solid var(--accent);padding-left:1.1rem;margin-top:1rem}
 .standing blockquote{margin:0;padding:0;border:0}
 .standing p{margin:0 0 .7rem;font-size:.95rem;color:var(--soft);max-width:62ch}

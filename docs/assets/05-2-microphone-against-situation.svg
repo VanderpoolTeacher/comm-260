@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">Microphone against situation</title>
+<desc id="d">Three situations paired with a microphone type. Seated interview to lavalier. Cannot approach to shotgun. Noisy room, close to handheld. Each pair is drawn with a simple line silhouette of the microphone.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.sit{font-size:34px}
+.mic{font-size:34px;fill:#2F5D50}</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#1A1D1F"/>
+</marker>
+</defs>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<!-- row 1 : lavalier -->
+<text class="sit" x="560" y="270" text-anchor="end">Seated interview</text>
+<path d="M600 258H706" stroke="#1A1D1F" stroke-width="2.5" marker-end="url(#a)"/>
+<text class="mic" x="760" y="270">Lavalier</text>
+<g fill="none" stroke="#1A1D1F" stroke-width="3">
+<rect x="1168" y="222" width="16" height="34" rx="8"/>
+<rect x="1186" y="230" width="9" height="26" rx="4"/>
+<path d="M1176 256C1179 278 1197 284 1215 294"/>
+</g>
+
+<!-- row 2 : shotgun -->
+<text class="sit" x="560" y="450" text-anchor="end">Cannot approach</text>
+<path d="M600 438H706" stroke="#1A1D1F" stroke-width="2.5" marker-end="url(#a)"/>
+<text class="mic" x="760" y="450">Shotgun</text>
+<g fill="none" stroke="#1A1D1F" stroke-width="3">
+<rect x="1120" y="428" width="190" height="20" rx="10"/>
+<path d="M1146 434V442M1161 434V442M1176 434V442M1191 434V442"/>
+<circle cx="1318" cy="438" r="8"/>
+</g>
+
+<!-- row 3 : handheld -->
+<text class="sit" x="560" y="630" text-anchor="end">Noisy room, close</text>
+<path d="M600 618H706" stroke="#1A1D1F" stroke-width="2.5" marker-end="url(#a)"/>
+<text class="mic" x="760" y="630">Handheld</text>
+<g fill="none" stroke="#1A1D1F" stroke-width="3">
+<path d="M1173.9 604L1288 606A12 12 0 0 1 1288 630L1173.9 632A26 26 0 1 1 1173.9 604Z"/>
+</g>
+</svg>

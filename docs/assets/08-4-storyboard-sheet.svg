@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1240 1754" width="1240" height="1754" role="img" aria-labelledby="t d">
+<title id="t">Storyboard sheet</title>
+<desc id="d">A printable sheet of six empty 16 by 9 frames in two columns of three. Beneath each frame are three ruled lines labelled shot, action and sound.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:17px}</style>
+<rect width="1240" height="1754" fill="#FFFFFF"/>
+
+<!-- frames -->
+<g fill="none" stroke="#1A1D1F" stroke-width="2.5">
+<rect x="90" y="160" width="495" height="278"/>
+<rect x="655" y="160" width="495" height="278"/>
+<rect x="90" y="666" width="495" height="278"/>
+<rect x="655" y="666" width="495" height="278"/>
+<rect x="90" y="1172" width="495" height="278"/>
+<rect x="655" y="1172" width="495" height="278"/>
+</g>
+
+<!-- ruled lines -->
+<g stroke="#1A1D1F" stroke-width="1.5">
+<path d="M152 490H585M152 536H585M152 582H585"/>
+<path d="M717 490H1150M717 536H1150M717 582H1150"/>
+<path d="M152 996H585M152 1042H585M152 1088H585"/>
+<path d="M717 996H1150M717 1042H1150M717 1088H1150"/>
+<path d="M152 1502H585M152 1548H585M152 1594H585"/>
+<path d="M717 1502H1150M717 1548H1150M717 1594H1150"/>
+</g>
+
+<!-- line labels -->
+<g>
+<text x="90" y="487">shot</text><text x="90" y="533">action</text><text x="90" y="579">sound</text>
+<text x="655" y="487">shot</text><text x="655" y="533">action</text><text x="655" y="579">sound</text>
+<text x="90" y="993">shot</text><text x="90" y="1039">action</text><text x="90" y="1085">sound</text>
+<text x="655" y="993">shot</text><text x="655" y="1039">action</text><text x="655" y="1085">sound</text>
+<text x="90" y="1499">shot</text><text x="90" y="1545">action</text><text x="90" y="1591">sound</text>
+<text x="655" y="1499">shot</text><text x="655" y="1545">action</text><text x="655" y="1591">sound</text>
+</g>
+</svg>

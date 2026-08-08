@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">Five shot sizes and what each one does</title>
+<desc id="d">Five 16 by 9 frames left to right containing the same figure at progressively larger scale. Wide, where you are. Medium wide, who is here. Medium, what they are doing. Medium close, how they feel. Close-up, what to feel.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.nm{font-size:30px}
+.fn{font-size:24px;fill:#2F5D50}</style>
+<defs>
+<g id="fig" fill="#1A1D1F">
+<circle cx="0" cy="-88" r="11"/>
+<path d="M-8 -80L8 -80L15 -77L20 -70L21 -46L-21 -46L-20 -70L-15 -77Z"/>
+<path d="M-15 -46L-14 0L-4 0L-3 -46Z"/>
+<path d="M3 -46L4 0L14 0L15 -46Z"/>
+</g>
+<clipPath id="c1"><rect x="45" y="325" width="264" height="149"/></clipPath>
+<clipPath id="c2"><rect x="357" y="325" width="264" height="149"/></clipPath>
+<clipPath id="c3"><rect x="669" y="325" width="264" height="149"/></clipPath>
+<clipPath id="c4"><rect x="981" y="325" width="264" height="149"/></clipPath>
+<clipPath id="c5"><rect x="1293" y="325" width="264" height="149"/></clipPath>
+</defs>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<g clip-path="url(#c1)"><use href="#fig" transform="translate(177,451) scale(0.57)"/></g>
+<g clip-path="url(#c2)"><use href="#fig" transform="translate(489,465) scale(1.19)"/></g>
+<g clip-path="url(#c3)"><use href="#fig" transform="translate(801,591) scale(2.55)"/></g>
+<g clip-path="url(#c4)"><use href="#fig" transform="translate(1113,700) scale(3.65)"/></g>
+<g clip-path="url(#c5)"><use href="#fig" transform="translate(1425,862) scale(5.28)"/></g>
+
+<g fill="none" stroke="#1A1D1F" stroke-width="3">
+<rect x="45" y="325" width="264" height="149"/>
+<rect x="357" y="325" width="264" height="149"/>
+<rect x="669" y="325" width="264" height="149"/>
+<rect x="981" y="325" width="264" height="149"/>
+<rect x="1293" y="325" width="264" height="149"/>
+</g>
+
+<text class="nm" x="177" y="534" text-anchor="middle">Wide</text>
+<text class="nm" x="489" y="534" text-anchor="middle">Medium wide</text>
+<text class="nm" x="801" y="534" text-anchor="middle">Medium</text>
+<text class="nm" x="1113" y="534" text-anchor="middle">Medium close</text>
+<text class="nm" x="1425" y="534" text-anchor="middle">Close-up</text>
+
+<text class="fn" x="177" y="576" text-anchor="middle">where you are</text>
+<text class="fn" x="489" y="576" text-anchor="middle">who is here</text>
+<text class="fn" x="801" y="576" text-anchor="middle">what they are doing</text>
+<text class="fn" x="1113" y="576" text-anchor="middle">how they feel</text>
+<text class="fn" x="1425" y="576" text-anchor="middle">what to feel</text>
+</svg>

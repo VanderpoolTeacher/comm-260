@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 900 1200" width="900" height="1200" role="img" aria-labelledby="t d">
+<title id="t">The gain staging window</title>
+<desc id="d">A vertical level meter scaled from minus 60 dBFS to 0 dBFS. Minus 12 to minus 6 is marked target. Above minus 6 is marked clipping. Below minus 24 is marked noise floor rises when lifted.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.sc{font-size:26px}
+.zn{font-size:32px}
+.zs{font-size:24px}
+.un{font-size:22px;opacity:0.6}</style>
+<rect width="900" height="1200" fill="#E9E6DE"/>
+
+<!-- zones -->
+<rect x="290" y="180" width="180" height="86" fill="#7A3B52"/>
+<rect x="290" y="266" width="180" height="86" fill="#2F5D50"/>
+<rect x="290" y="524" width="180" height="516" fill="#1A1D1F" opacity="0.18"/>
+
+<!-- meter body -->
+<rect x="290" y="180" width="180" height="860" fill="none" stroke="#1A1D1F" stroke-width="3"/>
+
+<!-- scale -->
+<text class="un" x="262" y="152" text-anchor="end">dBFS</text>
+<g stroke="#1A1D1F" stroke-width="2">
+<path d="M272 180H290"/>
+<path d="M272 266H290"/>
+<path d="M272 352H290"/>
+<path d="M272 524H290"/>
+<path d="M272 1040H290"/>
+</g>
+<text class="sc" x="262" y="189" text-anchor="end">0</text>
+<text class="sc" x="262" y="275" text-anchor="end">&#8722;6</text>
+<text class="sc" x="262" y="361" text-anchor="end">&#8722;12</text>
+<text class="sc" x="262" y="533" text-anchor="end">&#8722;24</text>
+<text class="sc" x="262" y="1049" text-anchor="end">&#8722;60</text>
+
+<!-- zone callouts -->
+<g stroke="#1A1D1F" stroke-width="2" opacity="0.4">
+<path d="M470 223H500"/>
+<path d="M470 309H500"/>
+<path d="M470 782H500"/>
+</g>
+<text class="zn" x="518" y="234" fill="#7A3B52">clipping</text>
+<text class="zn" x="518" y="320" fill="#2F5D50">target</text>
+<text class="zs" x="518" y="774" opacity="0.7">noise floor rises</text>
+<text class="zs" x="518" y="806" opacity="0.7">when lifted</text>
+</svg>

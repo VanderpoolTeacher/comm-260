@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">Five means of subject emphasis</title>
+<desc id="d">A circle labelled subject emphasis, with five thin lines radiating to five labels of equal weight: placement, scale, focus, contrast, light. No means is shown as more important than another.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.mean{font-size:36px}
+.core{font-size:30px;fill:#E9E6DE}</style>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<!-- radiating lines, identical weight -->
+<g stroke="#1A1D1F" stroke-width="2.5">
+<path d="M800 310V172"/>
+<path d="M933 407L1064 364"/>
+<path d="M882 563L963 675"/>
+<path d="M718 563L637 675"/>
+<path d="M667 407L536 364"/>
+</g>
+
+<circle cx="800" cy="450" r="130" fill="#2F5D50"/>
+<text class="core" x="800" y="442" text-anchor="middle">Subject</text>
+<text class="core" x="800" y="480" text-anchor="middle">emphasis</text>
+
+<!-- five labels, identical size and weight -->
+<text class="mean" x="800" y="100" text-anchor="middle">Placement</text>
+<text class="mean" x="1128" y="355" text-anchor="middle">Scale</text>
+<text class="mean" x="1003" y="735" text-anchor="middle">Focus</text>
+<text class="mean" x="597" y="735" text-anchor="middle">Contrast</text>
+<text class="mean" x="472" y="355" text-anchor="middle">Light</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 900 1200" width="900" height="1200" role="img" aria-labelledby="t d">
+<title id="t">Export settings and what each one controls</title>
+<desc id="d">Five export settings with what each controls. Resolution, how many pixels. Frame rate, how many images per second. Codec, how it is compressed. Bitrate, how much data per second. Container, what wraps it. No values are given.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.st{font-size:42px}
+.ct{font-size:28px;fill:#2F5D50}</style>
+<rect width="900" height="1200" fill="#E9E6DE"/>
+
+<g stroke="#1A1D1F" stroke-width="2" opacity="0.25">
+<path d="M100 350H800M100 515H800M100 680H800M100 845H800"/>
+</g>
+
+<text class="st" x="100" y="265">Resolution</text>
+<text class="ct" x="100" y="311">how many pixels</text>
+
+<text class="st" x="100" y="430">Frame rate</text>
+<text class="ct" x="100" y="476">how many images per second</text>
+
+<text class="st" x="100" y="595">Codec</text>
+<text class="ct" x="100" y="641">how it is compressed</text>
+
+<text class="st" x="100" y="760">Bitrate</text>
+<text class="ct" x="100" y="806">how much data per second</text>
+
+<text class="st" x="100" y="925">Container</text>
+<text class="ct" x="100" y="971">what wraps it</text>
+</svg>

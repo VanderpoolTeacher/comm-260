@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">Linear and non-linear structure</title>
+<desc id="d">Left, linear: five circles in one row on a single fixed path with one entry point, captioned you decide the order. Right, non-linear: the same five circles loosely arranged with arrows running in several directions and three separate entry points, captioned they do.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.ttl{font-size:38px}
+.cap{font-size:32px}
+.ent{font-size:20px}</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#1A1D1F"/>
+</marker>
+</defs>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<text class="ttl" x="401" y="140" text-anchor="middle">linear</text>
+<text class="ttl" x="1180" y="140" text-anchor="middle">non-linear</text>
+
+<!-- LEFT : one fixed path -->
+<g stroke="#1A1D1F" stroke-width="2.5" fill="none" marker-end="url(#a)">
+<path d="M105 445H148"/>
+<path d="M217 445H273"/>
+<path d="M337 445H393"/>
+<path d="M457 445H513"/>
+<path d="M577 445H633"/>
+</g>
+<circle cx="105" cy="445" r="5" fill="#1A1D1F"/>
+<text class="ent" x="126" y="412" text-anchor="middle">entry</text>
+<g fill="#2F5D50">
+<circle cx="185" cy="445" r="32"/>
+<circle cx="305" cy="445" r="32"/>
+<circle cx="425" cy="445" r="32"/>
+<circle cx="545" cy="445" r="32"/>
+<circle cx="665" cy="445" r="32"/>
+</g>
+<text class="cap" x="401" y="760" text-anchor="middle">you decide the order</text>
+
+<!-- RIGHT : many paths, three ways in -->
+<g transform="translate(0,40)">
+<g stroke="#1A1D1F" stroke-width="2.5" fill="none" marker-end="url(#a)">
+<path d="M996.7 320L1143.3 280"/>
+<path d="M1214 287L1366 363"/>
+<path d="M1372.1 405.8L1297.9 474.2"/>
+<path d="M1232.5 505.8L1047.5 534.2"/>
+<path d="M1001.2 503L968.8 367"/>
+<path d="M1193.8 305.4L1256.2 464.6"/>
+<path d="M1045.2 525.6L1364.8 394.4"/>
+<path d="M860 300L923.6 319.1"/>
+<path d="M1180 150V232"/>
+<path d="M900 640L981.9 565.6"/>
+</g>
+<g fill="#1A1D1F">
+<circle cx="860" cy="300" r="5"/>
+<circle cx="1180" cy="150" r="5"/>
+<circle cx="900" cy="640" r="5"/>
+</g>
+<g class="ent">
+<text x="872" y="274">entry</text>
+<text x="1195" y="168">entry</text>
+<text x="884" y="668" text-anchor="end">entry</text>
+</g>
+<g fill="#2F5D50">
+<circle cx="960" cy="330" r="32"/>
+<circle cx="1180" cy="270" r="32"/>
+<circle cx="1400" cy="380" r="32"/>
+<circle cx="1010" cy="540" r="32"/>
+<circle cx="1270" cy="500" r="32"/>
+</g>
+</g>
+<text class="cap" x="1180" y="760" text-anchor="middle">they do</text>
+</svg>

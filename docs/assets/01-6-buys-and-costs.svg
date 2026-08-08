@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="#1A1D1F" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-labelledby="t d">
+<title id="t">What a shallow frame buys and what it costs</title>
+<desc id="d">A two-column comparison. Left column, what it buys: subject isolated, attention directed, space to absorb. Right column, what it costs: the room, the situation, pace. Each pair joined by an arrow running left to right.</desc>
+<style>text{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+.hd{font-size:26px;letter-spacing:1.6px}
+.it{font-size:42px}</style>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#1A1D1F"/>
+</marker>
+</defs>
+<rect width="1600" height="900" fill="#E9E6DE"/>
+
+<!-- column headings -->
+<text class="hd" x="680" y="250" text-anchor="end">What it buys</text>
+<text class="hd" x="920" y="250" text-anchor="start">What it costs</text>
+<path d="M300 282H680" stroke="#1A1D1F" stroke-width="2" opacity="0.3"/>
+<path d="M920 282H1300" stroke="#1A1D1F" stroke-width="2" opacity="0.3"/>
+
+<!-- row 1 -->
+<text class="it" x="680" y="430" text-anchor="end" fill="#2F5D50">Subject isolated</text>
+<path d="M710 416H886" stroke="#1A1D1F" stroke-width="2.5" marker-end="url(#a)"/>
+<text class="it" x="920" y="430" text-anchor="start" fill="#7A3B52">The room</text>
+
+<!-- row 2 -->
+<text class="it" x="680" y="570" text-anchor="end" fill="#2F5D50">Attention directed</text>
+<path d="M710 556H886" stroke="#1A1D1F" stroke-width="2.5" marker-end="url(#a)"/>
+<text class="it" x="920" y="570" text-anchor="start" fill="#7A3B52">The situation</text>
+
+<!-- row 3 -->
+<text class="it" x="680" y="710" text-anchor="end" fill="#2F5D50">Space to absorb</text>
+<path d="M710 696H886" stroke="#1A1D1F" stroke-width="2.5" marker-end="url(#a)"/>
+<text class="it" x="920" y="710" text-anchor="start" fill="#7A3B52">Pace</text>
+</svg>
