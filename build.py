@@ -171,8 +171,15 @@ def build_deck(wdir, wnum, wtitle, asset_files):
             want = f"{int(num.group(1)):02d}-{num.group(2)}-"
             fn = next((a for a in asset_files if a.startswith(want)), None)
         gen = bool(re.search(r"\*\(generated\)\*", c))
+        vids = []
+        for vm in re.finditer(r"youtube\.com/watch\?v=([A-Za-z0-9_-]{6,})", c):
+            line = c[c.rfind("\n", 0, vm.start()) + 1: c.find("\n", vm.end())]
+            lab = re.search(r"\*\*([^*]+)\*\*\s*·\s*([^·|]+)", line)
+            vids.append((vm.group(1),
+                         (lab.group(1).strip() if lab else "Listening"),
+                         (lab.group(2).strip() if lab else "")))
         assets.append((tag.group(1) if tag else "NONE", fn,
-                       (alt.group(1).strip() if alt else ""), gen))
+                       (alt.group(1).strip() if alt else ""), gen, vids))
 
     rendered = md_to_html(f"\n\n{SLIDE_SPLIT}\n\n".join(screens),
                           fmt="gfm+hard_line_breaks")
@@ -180,13 +187,23 @@ def build_deck(wdir, wnum, wtitle, asset_files):
     html_chunks = rendered.split(SLIDE_SPLIT)
     cards = []
     for i, (title, frag) in enumerate(zip(titles, html_chunks)):
-        tag, fn, alt, gen = assets[i]
+        tag, fn, alt, gen, vids = assets[i]
         media = ""
-        if fn:
+        for vid, vtitle, vby in vids:
+            media += (f'<figure class="vid"><div class="vwrap"><iframe '
+                      f'src="https://www.youtube-nocookie.com/embed/{html.escape(vid)}" '
+                      f'title="{html.escape(vtitle)}" loading="lazy" allowfullscreen '
+                      f'referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+                      f'<figcaption>{html.escape(vtitle)}'
+                      + (f' &middot; {html.escape(vby)}' if vby else "")
+                      + f' &middot; <a href="https://www.youtube.com/watch?v={html.escape(vid)}"'
+                        f' target="_blank" rel="noopener">open on YouTube</a>'
+                      + '</figcaption></figure>')
+        if fn and not vids:
             cred = '<p class="cred">Generated image</p>' if gen else ""
             media = (f'<div class="sfig"><img src="../assets/{html.escape(fn)}" '
                      f'alt="{html.escape(alt)}" loading="lazy">{cred}</div>')
-        elif tag in ("FIND", "SHOW", "MAKE", "GENERATE"):
+        elif tag in ("FIND", "SHOW", "MAKE", "GENERATE") and not vids:
             media = ('<p class="spend">Shown in class.</p>')
         norm = lambda x: re.sub(r"[^a-z0-9]", "", x.lower())
         first = re.search(r"<h[1-6][^>]*>(.*?)</h[1-6]>", frag, re.S)
@@ -709,6 +726,13 @@ ul.weeks .c{white-space:nowrap}
 .deckwrap.presenting .check{width:min(74vw,1180px);margin:2vmin auto 0;gap:1vmin}
 .deckwrap.presenting .opt{font-size:2.6vmin;padding:1.4vmin 2vmin}
 .deckwrap.presenting .qfb{font-size:2.4vmin}
+.vid{margin:1rem 0 0;width:100%}
+.vwrap{position:relative;padding-top:56.25%;background:var(--panel);border:1px solid var(--rule)}
+.vwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid figcaption{margin-top:.4rem;font-size:.86rem;color:var(--soft)}
+.deckwrap.presenting .vid{width:min(74vw,1180px);margin:2vmin auto 0}
+.deckwrap.presenting .vwrap{padding-top:min(56.25%,52vh)}
+.deckwrap.presenting .vid figcaption{font-size:2vmin}
 .cred{margin:.4rem 0 0;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
 .deckwrap.presenting .cred{font-size:1.5vmin}
 .doc figcaption,.doc .cred{color:var(--faint);font-size:.85rem}
