@@ -220,8 +220,12 @@ def build_deck(wdir, wnum, wtitle, asset_files):
                 for k, t in chk["opts"])
             quiz = (f'<div class="check" data-answer="{chk["answer"]}">{btns}'
                     f'<p class="qfb" role="status" aria-live="polite"></p></div>')
-        cards.append(f'<section class="slide"><p class="sn">{i+1} / {len(titles)}</p>'
-                     f'{eyebrow}<div class="sbody">{frag}</div>{quiz}{media}</section>')
+        has_text = bool(re.sub(r"<[^>]+>", "", frag).strip()) or bool(quiz)
+        split = " split" if (media and has_text) else ""
+        cards.append(f'<section class="slide{split}">'
+                     f'<div class="stext"><p class="sn">{i+1} / {len(titles)}</p>'
+                     f'{eyebrow}<div class="sbody">{frag}</div>{quiz}</div>'
+                     f'{media}</section>')
     return "\n".join(cards), len(titles)
 
 
@@ -759,10 +763,18 @@ body.presenting{overflow:hidden}
 .deckwrap.presenting .sbody{font-size:3.4vmin}
 .deckwrap.presenting .sbody h1{font-size:7.5vmin;line-height:1.08;margin:.2em 0 .3em}
 .deckwrap.presenting .sbody h2,.deckwrap.presenting .sbody h3{font-size:4vmin}
-.deckwrap.presenting .sn,.deckwrap.presenting .deck h2,
-.deckwrap.presenting .sbody,.deckwrap.presenting .sfig,
-.deckwrap.presenting .spend{width:min(74vw,1180px);max-width:none;
-  margin-left:auto;margin-right:auto;text-align:left}
+.deckwrap.presenting .stext,.deckwrap.presenting .sfig,
+.deckwrap.presenting .vid,.deckwrap.presenting .spend{width:min(74vw,1180px);
+  max-width:none;margin-left:auto;margin-right:auto;text-align:left}
+/* text beside the picture, not stacked under it */
+.deckwrap.presenting .slide.split.on{display:grid;grid-template-columns:1.02fr .98fr;
+  gap:4vmin;align-items:center;align-content:center}
+.deckwrap.presenting .split .stext,.deckwrap.presenting .split .sfig,
+.deckwrap.presenting .split .vid{width:100%;margin:0}
+.deckwrap.presenting .split .sbody{font-size:2.6vmin}
+.deckwrap.presenting .split .sbody h1{font-size:5vmin}
+.deckwrap.presenting .split .sfig img{max-height:70vh;max-width:100%}
+@media (max-aspect-ratio:1/1){.deckwrap.presenting .slide.split.on{grid-template-columns:1fr}}
 .deckwrap.presenting .sbody{text-align:left}
 .deckwrap.presenting .sbody p,.deckwrap.presenting .sbody li{max-width:none;margin:.45em 0}
 .deckwrap.presenting .sbody ul,.deckwrap.presenting .sbody ol{padding-left:1.3em;margin:.4em 0}
