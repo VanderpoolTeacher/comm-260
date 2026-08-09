@@ -26,6 +26,7 @@ unwrapped to plain text rather than left dangling, and internal tracking links
 are dropped, so nothing in docs/ points at material students should not have.
 """
 
+import hashlib
 import html
 import json
 import os
@@ -358,6 +359,9 @@ def md_to_html(text, fmt="gfm"):
     )
 
 
+STYLE_V = ""
+
+
 def page(title, crumb, body, depth):
     up = "../" * depth
     return f"""<!doctype html>
@@ -366,7 +370,7 @@ def page(title, crumb, body, depth):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)} &middot; {COURSE}</title>
-<link rel="stylesheet" href="{up}style.css">
+<link rel="stylesheet" href="{up}style.css?v={STYLE_V}">
 </head>
 <body>
 <header class="bar">
@@ -400,6 +404,8 @@ def main():
     DOCS.mkdir(parents=True)
     (DOCS / ".nojekyll").write_text("")
     (DOCS / "style.css").write_text(STYLE)
+    global STYLE_V
+    STYLE_V = hashlib.md5(STYLE.encode()).hexdigest()[:8]
 
     pub, weeks = collect()
     hours, standing = parse_review()
@@ -585,15 +591,17 @@ DECK_JS = """
   if(!d) return;
   var s=[].slice.call(d.querySelectorAll('.slide')), i=0,
       c=document.getElementById('dcount');
+  var pv=document.getElementById('prev'), nx=document.getElementById('next');
   function show(n){ i=Math.max(0,Math.min(s.length-1,n));
     s.forEach(function(el,k){el.classList.toggle('on',k===i);});
-    c.textContent=(i+1)+' / '+s.length; }
+    c.textContent=(i+1)+' / '+s.length;
+    pv.disabled=(i===0); nx.disabled=(i===s.length-1); }
   document.addEventListener('keydown',function(e){
     if(e.key==='ArrowRight'||e.key===' '){show(i+1);e.preventDefault();}
     else if(e.key==='ArrowLeft'){show(i-1);e.preventDefault();}
     else if(e.key==='Home'){show(0);e.preventDefault();}
     else if(e.key==='End'){show(s.length-1);e.preventDefault();}});
-  d.addEventListener('click',function(){show(i+1);});
+  d.addEventListener('click',function(){ if(i<s.length-1) show(i+1); });
   document.getElementById('next').addEventListener('click',function(e){e.stopPropagation();show(i+1);});
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');
@@ -771,7 +779,8 @@ body.presenting{overflow:hidden}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
 .dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
   color:var(--ink);border:1px solid var(--rule);cursor:pointer}
-.dhud button:hover{border-color:var(--accent)}
+.dhud button:hover:not(:disabled){border-color:var(--accent)}
+.dhud button:disabled{opacity:.35;cursor:default}
 .dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
 
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}

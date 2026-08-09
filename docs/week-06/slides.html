@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Week 6 slides &middot; COMM 260</title>
-<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../style.css?v=608d7398">
 </head>
 <body>
 <header class="bar">
@@ -100,15 +100,17 @@ project.</strong></p>
   if(!d) return;
   var s=[].slice.call(d.querySelectorAll('.slide')), i=0,
       c=document.getElementById('dcount');
+  var pv=document.getElementById('prev'), nx=document.getElementById('next');
   function show(n){ i=Math.max(0,Math.min(s.length-1,n));
     s.forEach(function(el,k){el.classList.toggle('on',k===i);});
-    c.textContent=(i+1)+' / '+s.length; }
+    c.textContent=(i+1)+' / '+s.length;
+    pv.disabled=(i===0); nx.disabled=(i===s.length-1); }
   document.addEventListener('keydown',function(e){
     if(e.key==='ArrowRight'||e.key===' '){show(i+1);e.preventDefault();}
     else if(e.key==='ArrowLeft'){show(i-1);e.preventDefault();}
     else if(e.key==='Home'){show(0);e.preventDefault();}
     else if(e.key==='End'){show(s.length-1);e.preventDefault();}});
-  d.addEventListener('click',function(){show(i+1);});
+  d.addEventListener('click',function(){ if(i<s.length-1) show(i+1); });
   document.getElementById('next').addEventListener('click',function(e){e.stopPropagation();show(i+1);});
   document.getElementById('prev').addEventListener('click',function(e){e.stopPropagation();show(i-1);});
   var wrap=document.getElementById('deckwrap'), fsb=document.getElementById('fs');

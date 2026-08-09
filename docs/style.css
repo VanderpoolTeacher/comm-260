@@ -136,7 +136,8 @@ body.presenting{overflow:hidden}
 .dhud{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.8rem}
 .dhud button{font:inherit;font-size:.9rem;padding:.45rem .9rem;background:var(--ground);
   color:var(--ink);border:1px solid var(--rule);cursor:pointer}
-.dhud button:hover{border-color:var(--accent)}
+.dhud button:hover:not(:disabled){border-color:var(--accent)}
+.dhud button:disabled{opacity:.35;cursor:default}
 .dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
 
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
