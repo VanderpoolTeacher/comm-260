@@ -165,7 +165,9 @@ def build_deck(wdir, wnum, wtitle, asset_files):
         screens.append(body)
 
         tag = re.search(r"\*\*ASSET\*\*\s*·\s*`(\w+)`", c)
-        num = re.search(r"image prompt \*\*(\d+)\.(\d+)\*\*", c)
+        # two formats in the specs: "image prompt **2.6**" and "2.6 in [course image prompts]"
+        num = (re.search(r"image prompt \*\*(\d+)\.(\d+)\*\*", c)
+               or re.search(r"\*\*ASSET\*\*[^\n]*?\b(\d+)\.(\d+)\b[^\n]*?course image prompts", c))
         alt = re.search(r"\|\s*\*\*Alt text\*\*\s*\|(.*?)\|", c)
         fn = None
         if num:
