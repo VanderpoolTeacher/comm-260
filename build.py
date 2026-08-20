@@ -947,9 +947,13 @@ h1{font-size:clamp(1.8rem,5.5vw,2.7rem);line-height:1.12;letter-spacing:-.022em;
 h1 .sub{display:block;font-size:.46em;font-weight:400;color:var(--soft);
   margin-top:.5rem;letter-spacing:0}
 .lede{font-size:1.06rem;color:var(--soft);max-width:44ch;margin:0 0 2.4rem}
-h2.sec{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--faint);font-weight:400;margin:2.4rem 0 .8rem}
-h2.sec:first-of-type{margin-top:0}
+h2.sec{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink);font-weight:600;margin:3rem 0 1rem;
+  padding-top:1.3rem;border-top:1px solid var(--rule)}
+/* Only drop the separation when the heading genuinely opens its container.
+   :first-of-type fired on "Hours by week" and "Reference", which follow an h1
+   and a lede, so both lost their top margin while sitting mid-page. */
+h2.sec:first-child{margin-top:0;padding-top:0;border-top:0}
 
 ul.weeks,ul.cards{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
 ul.weeks a,ul.cards a{display:flex;gap:1rem;align-items:baseline;padding:.9rem 1.1rem;
@@ -964,8 +968,8 @@ ul.weeks .c{white-space:nowrap}
 
 .review{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
 .review h2{display:flex;flex-wrap:wrap;gap:.6rem;align-items:baseline;
-  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--faint);font-weight:400;margin:0 0 .5rem}
+  font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink);font-weight:600;margin:0 0 .5rem}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
 .rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:80ch}
@@ -1098,8 +1102,8 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
 }
 
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
-.diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--faint);font-weight:400;margin:0 0 .5rem}
+.diagrams h2{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink);font-weight:600;margin:0 0 .5rem}
 .diagrams figure{margin:0 0 1.2rem}
 .diagrams img{display:block;width:100%;max-width:100%;height:auto;
   background:#E9E6DE;border:1px solid var(--rule)}
