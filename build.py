@@ -1019,9 +1019,19 @@ def main():
 
     # review list — one page collecting every week's expectation
     if hours:
+        # A reading list may cover more weeks than the course has built. DSGN 114
+        # allocates fifteen weeks of review against seven week folders, which
+        # produced eight links to pages that do not exist. Keep the row -- the
+        # hours are real -- but only link a week that was actually built.
+        def _wk_cell(w):
+            title = html.escape(WEEK_TITLES.get(w, ""))
+            if (DOCS / f"week-{w:02d}" / "index.html").exists():
+                return f'<td><a href="../week-{w:02d}/index.html">{title}</a></td>'
+            return f'<td>{title}</td>'
+
         trs = "".join(
             f'<tr><td class="n">{w}</td>'
-            f'<td><a href="../week-{w:02d}/index.html">{html.escape(WEEK_TITLES.get(w, ""))}</a></td>'
+            f'{_wk_cell(w)}'
             f'<td class="n">{sum(float(v) for v in hours[w] if v and v[0].isdigit()):.2f} h</td></tr>'
             for w in sorted(hours))
         tot = sum(sum(float(v) for v in hours[w] if v and v[0].isdigit()) for w in hours)
