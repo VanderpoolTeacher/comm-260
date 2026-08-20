@@ -368,6 +368,112 @@ def md_to_html(text, fmt="gfm"):
 STYLE_V = ""
 
 
+
+# --- Week overview and To Do list -------------------------------------------
+#
+# Sourced from 00-week-outline.md, which is itself WITHHELD. Only three parts
+# are lifted: the one-line framing, the outcomes table, and the assessment
+# declaration. The rest of that file — what must exist before the week runs,
+# why the assessment is where it is — stays unpublished.
+
+PROSE_HEADINGS = ("The week in one line", "What this week is", "What this week does")
+OUTCOME_HEADINGS = ("Lesson outcomes", "By the end of this week you can")
+
+TODO_VERB = {
+    "Lesson": "Read", "Slides": "Review", "Demo": "Watch", "Lab": "Do",
+    "Assignment": "Submit", "Checkpoint": "Submit", "Interactive": "Practise",
+    "Knowledge check": "Review", "Worksheet": "Print", "Files": "Download",
+}
+
+
+def _section(md, heading):
+    m = re.search(r"^##\s+" + re.escape(heading) + r"\s*\n(.*?)(?=^##\s|^---\s*$)",
+                  md, re.S | re.M)
+    return m.group(1).strip() if m else ""
+
+
+def _plain(t):
+    t = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", t)
+    t = re.sub(r"\*\*(.+?)\*\*", r"\1", t)
+    return re.sub(r"\*(.+?)\*", r"\1", t).strip()
+
+
+def _inline(t):
+    """Bold survives; links are flattened — they would point at withheld files."""
+    t = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", t)
+    t = html.escape(t)
+    return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", t)
+
+
+def outline_assessment(md):
+    """Two shapes: '**Assessment:** text' and '**Assessment: text.** rationale'."""
+    m = re.search(r"^\*\*Assessment:\*\*\s*(.+?)\s*$", md, re.M)
+    if m:
+        return _plain(m.group(1))
+    m = re.search(r"^\*\*Assessment:\s*(.+?)\*\*", md, re.M)
+    return _plain(m.group(1)) if m else ""
+
+
+def outline_outcomes(md):
+    body = ""
+    for h in OUTCOME_HEADINGS:
+        body = _section(md, h)
+        if body:
+            break
+    rows = []
+    for line in body.splitlines():
+        m = re.match(r"^\|\s*\*\*([\d.]+)\*\*\s*\|\s*([^|]+?)\s*\|", line)
+        if m:
+            rows.append((m.group(1), m.group(2)))
+    return rows
+
+
+def overview_html(outline_md):
+    prose = ""
+    for h in PROSE_HEADINGS:
+        prose = _section(outline_md, h)
+        if prose:
+            break
+    paras = [x.strip() for x in prose.split("\n\n") if x.strip()
+             and not x.strip().startswith("**Assessment")]
+
+    out = ['<section class="overview"><h2>Overview</h2>']
+    for x in paras[:3]:
+        out.append(f'<p>{_inline(x)}</p>')
+
+    los = outline_outcomes(outline_md)
+    if los:
+        out.append('<p class="lolead">By the end of this week you can</p><ul class="los">')
+        for n, text in los:
+            out.append(f'<li data-n="{html.escape(n)}">{_inline(text)}</li>')
+        out.append('</ul>')
+
+    a = outline_assessment(outline_md)
+    if a:
+        out.append(f'<p class="asmt"><span>Assessment</span>{html.escape(a)}</p>')
+    out.append('</section>')
+    return "".join(out)
+
+
+def todo_html(wnum, cards, review_hours):
+    """Mirrors the page top to bottom: the cards in order, then review material,
+    which is the last section on the page."""
+    lis = []
+    for href, label, title in cards:
+        verb = TODO_VERB.get(label, "Open")
+        lis.append(f'<li><span class="v">{verb}</span>'
+                   f'<a href="{href}">{html.escape(title or label)}</a></li>')
+    if review_hours:
+        lis.append(f'<li><span class="v">Review</span>'
+                   f'<span>Provided material &mdash; {review_hours} '
+                   f'this week. Distributed in class.</span></li>')
+    if not lis:
+        return ""
+    return ('<section class="todo"><h2>To Do List</h2>'
+            f'<p class="rvnote">To successfully complete Week {wnum}, '
+            'please do the following:</p><ol>' + "".join(lis) + '</ol></section>')
+
+
 def page(title, crumb, body, depth):
     up = "../" * depth
     return f"""<!doctype html>
@@ -514,7 +620,13 @@ def main():
                    f'<p class="rvnote">From the lesson. Yours to keep &mdash; '
                    f'print them, mark them up.</p>{items}</section>')
 
+        ol_path = wdir / "00-week-outline.md"
+        ov = overview_html(ol_path.read_text()) if ol_path.exists() else ""
+        hrs_label = f"{total:.2f} h" if rd else ""
+        td = todo_html(wnum, cards, hrs_label)
+
         body = (f'<h1>Week {wnum}<span class="sub">{html.escape(wtitle)}</span></h1>'
+                f'{ov}{td}'
                 f'<ul class="cards">{lis}</ul>{dia}{rv}')
         write(f"{wdir.name}/index.html", page(f"Week {wnum}", crumb, body, 1))
         index_rows.append((wdir.name, wnum, wtitle, len(cards)))
@@ -797,6 +909,29 @@ body.presenting{overflow:hidden}
 .dhud button:disabled{opacity:.35;cursor:default}
 .dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
 
+
+.overview{margin:0 0 1.6rem}
+.overview h2,.todo h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);font-weight:400;margin:0 0 .6rem}
+.overview p{font-size:.98rem;color:var(--soft);max-width:62ch;margin:0 0 .85rem}
+.overview strong{color:var(--ink)}
+.overview .lolead{font-size:.86rem;color:var(--faint);margin:1.1rem 0 .5rem}
+ul.los{list-style:none;margin:0 0 1rem;padding:0;display:flex;flex-direction:column;gap:.42rem}
+ul.los li{font-size:.93rem;color:var(--soft);max-width:62ch;padding-left:2.6rem;position:relative}
+ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
+  font-size:.72rem;letter-spacing:.06em;color:var(--accent);font-variant-numeric:tabular-nums}
+.asmt{border-left:3px solid var(--accent);padding-left:.9rem;font-size:.9rem;
+  color:var(--soft);margin:0}
+.asmt span{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:.15rem}
+.todo{margin:0 0 1.8rem;border-top:1px solid var(--rule);padding-top:1.3rem}
+.todo ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.todo li{display:flex;gap:1rem;align-items:baseline;font-size:.94rem;color:var(--soft)}
+.todo li a{color:var(--ink)}
+.todo li a:hover{color:var(--accent)}
+.todo .v{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  min-width:9ch;flex:none}
+@media(max-width:34rem){.todo li{flex-direction:column;gap:.15rem}}
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
 .diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--faint);font-weight:400;margin:0 0 .5rem}

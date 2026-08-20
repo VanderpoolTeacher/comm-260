@@ -148,6 +148,29 @@ body.presenting{overflow:hidden}
 .dhud button:disabled{opacity:.35;cursor:default}
 .dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
 
+
+.overview{margin:0 0 1.6rem}
+.overview h2,.todo h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);font-weight:400;margin:0 0 .6rem}
+.overview p{font-size:.98rem;color:var(--soft);max-width:62ch;margin:0 0 .85rem}
+.overview strong{color:var(--ink)}
+.overview .lolead{font-size:.86rem;color:var(--faint);margin:1.1rem 0 .5rem}
+ul.los{list-style:none;margin:0 0 1rem;padding:0;display:flex;flex-direction:column;gap:.42rem}
+ul.los li{font-size:.93rem;color:var(--soft);max-width:62ch;padding-left:2.6rem;position:relative}
+ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
+  font-size:.72rem;letter-spacing:.06em;color:var(--accent);font-variant-numeric:tabular-nums}
+.asmt{border-left:3px solid var(--accent);padding-left:.9rem;font-size:.9rem;
+  color:var(--soft);margin:0}
+.asmt span{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:.15rem}
+.todo{margin:0 0 1.8rem;border-top:1px solid var(--rule);padding-top:1.3rem}
+.todo ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.todo li{display:flex;gap:1rem;align-items:baseline;font-size:.94rem;color:var(--soft)}
+.todo li a{color:var(--ink)}
+.todo li a:hover{color:var(--accent)}
+.todo .v{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  min-width:9ch;flex:none}
+@media(max-width:34rem){.todo li{flex-direction:column;gap:.15rem}}
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
 .diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--faint);font-weight:400;margin:0 0 .5rem}
