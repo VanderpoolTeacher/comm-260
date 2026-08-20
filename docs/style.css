@@ -22,9 +22,14 @@ a{color:var(--accent)}
 a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 .bar{border-bottom:1px solid var(--rule);background:var(--panel)}
-.home{display:block;max-width:80ch;margin:0 auto;padding:.9rem clamp(1rem,4vw,2rem);
-  text-decoration:none;color:var(--ink)}
-.home span{color:var(--faint);margin-left:.5rem;font-size:.9rem}
+.home{display:flex;align-items:baseline;gap:.55rem;max-width:80ch;margin:0 auto;
+  padding:.9rem clamp(1rem,4vw,2rem);text-decoration:none;color:var(--ink)}
+.home span{color:var(--faint);font-size:.9rem}
+.hico{flex:none;align-self:center;color:var(--accent);transition:transform .12s}
+.home:hover .hico{transform:translateY(-1px)}
+.home:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){.hico{transition:none}.home:hover .hico{transform:none}}
+@media(max-width:26rem){.home span{display:none}}
 
 main{max-width:80ch;margin:0 auto;padding:clamp(1.4rem,5vw,3rem) clamp(1rem,4vw,2rem)}
 

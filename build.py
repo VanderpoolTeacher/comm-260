@@ -501,6 +501,17 @@ def week_tabs(wnum, overview, todo):
             f'{"".join(panels)}</div>')
 
 
+HOME_ICON = (
+    '<svg class="hico" viewBox="0 0 24 24" width="17" height="17" fill="none" '
+    'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
+    'stroke-linejoin="round" aria-hidden="true" focusable="false">'
+    '<path d="M2.9 10.7 11.3 3.5a1.1 1.1 0 0 1 1.4 0l8.4 7.2"/>'
+    '<path d="M5.4 9.1v10.3a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1V9.1"/>'
+    '<path d="M9.7 20.4v-5.1h4.6v5.1"/>'
+    '</svg>'
+)
+
+
 def page(title, crumb, body, depth):
     up = "../" * depth
     return f"""<!doctype html>
@@ -513,7 +524,7 @@ def page(title, crumb, body, depth):
 </head>
 <body>
 <header class="bar">
-  <a class="home" href="{up}index.html"><b>{COURSE}</b> <span>{COURSE_LONG}</span></a>
+  <a class="home" href="{up}index.html">{HOME_ICON}<b>{COURSE}</b> <span>{COURSE_LONG}</span></a>
 </header>
 <main>
 {crumb}
@@ -848,9 +859,14 @@ a{color:var(--accent)}
 a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 .bar{border-bottom:1px solid var(--rule);background:var(--panel)}
-.home{display:block;max-width:80ch;margin:0 auto;padding:.9rem clamp(1rem,4vw,2rem);
-  text-decoration:none;color:var(--ink)}
-.home span{color:var(--faint);margin-left:.5rem;font-size:.9rem}
+.home{display:flex;align-items:baseline;gap:.55rem;max-width:80ch;margin:0 auto;
+  padding:.9rem clamp(1rem,4vw,2rem);text-decoration:none;color:var(--ink)}
+.home span{color:var(--faint);font-size:.9rem}
+.hico{flex:none;align-self:center;color:var(--accent);transition:transform .12s}
+.home:hover .hico{transform:translateY(-1px)}
+.home:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){.hico{transition:none}.home:hover .hico{transform:none}}
+@media(max-width:26rem){.home span{display:none}}
 
 main{max-width:80ch;margin:0 auto;padding:clamp(1.4rem,5vw,3rem) clamp(1rem,4vw,2rem)}
 
