@@ -70,6 +70,9 @@ footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--rule);color
 .home:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:2px}
 @media (prefers-reduced-motion:reduce){.hico{transition:none}.home:hover .hico{transform:none}}
 @media(max-width:26rem){.home span{display:none}}
+footer{border-top:1px solid var(--rule);margin-top:4rem;padding:1.6rem clamp(1rem,4vw,2rem) 3rem}
+footer p{max-width:80ch;margin:0 auto;color:var(--faint);font-size:.85rem}
+footer .fine{margin-top:.3rem}
 </style>
 </head>
 <body>
@@ -235,5 +238,6 @@ ROUNDS.forEach(r => {
   update();
 });
 </script>
+<footer><p>COMM 260 &middot; Introduction to Digital Media Production</p><p class="fine">Student materials, generated from course source. <a href="../../reference/accessibility.html">Accessibility</a></p></footer>
 </body>
 </html>

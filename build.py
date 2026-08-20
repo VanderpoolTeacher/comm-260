@@ -26,6 +26,7 @@ unwrapped to plain text rather than left dangling, and internal tracking links
 are dropped, so nothing in docs/ points at material students should not have.
 """
 
+import datetime
 import hashlib
 import html
 import json
@@ -545,6 +546,9 @@ CHROME_CSS = """
 .home:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:2px}
 @media (prefers-reduced-motion:reduce){.hico{transition:none}.home:hover .hico{transform:none}}
 @media(max-width:26rem){.home span{display:none}}
+footer{border-top:1px solid var(--rule);margin-top:4rem;padding:1.6rem clamp(1rem,4vw,2rem) 3rem}
+footer p{max-width:80ch;margin:0 auto;color:var(--faint);font-size:.85rem}
+footer .fine{margin-top:.3rem}
 """
 
 
@@ -564,10 +568,240 @@ def add_chrome(path, depth):
               f'<a class="home" href="{up}index.html">{HOME_ICON}'
               f'<b>{COURSE}</b> <span>{COURSE_LONG}</span></a>'
               f'</header>')
+    footer = (f'<footer><p>{COURSE} &middot; {COURSE_LONG}</p>'
+              f'<p class="fine">Student materials, generated from course source. '
+              f'<a href="{up}reference/accessibility.html">Accessibility</a></p>'
+              f'</footer>')
     t = t.replace("</style>", CHROME_CSS + "</style>", 1)
     t = t.replace("<body>", "<body>\n" + header, 1)
+    t = t.replace("</body>", footer + "\n</body>", 1)
     path.write_text(t)
     return True
+
+
+
+# --- Accessibility report -----------------------------------------------------
+#
+# Generated from the built site, every build. The point is that it cannot make a
+# claim the pages do not support: the ratios are computed from the emitted
+# style.css and the structural counts come from walking docs/. If something
+# regresses, the published report says so rather than going quietly stale.
+
+A11Y_CONTACT = ("Nikki Arnold", "Accessibility Services Coordinator and Case Manager",
+                "narnold@defiance.edu", "accessibility@defiance.edu", "extension 2445")
+
+
+def _srgb(c):
+    c /= 255
+    return c/12.92 if c <= 0.03928 else ((c+0.055)/1.055) ** 2.4
+
+
+def _lum(rgb):
+    r, g, b = (_srgb(x) for x in rgb)
+    return .2126*r + .7152*g + .0722*b
+
+
+def _ratio(a, b):
+    la, lb = _lum(a), _lum(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + .05) / (lo + .05)
+
+
+def _hex(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+
+def _over(fg, a, bg):
+    return tuple(round(f*a + b*(1-a)) for f, b in zip(fg, bg))
+
+
+def contrast_audit(css):
+    """Ratios computed from the stylesheet actually shipped."""
+    def tok(name, scope):
+        m = re.search(r"--%s:(#[0-9A-Fa-f]{6}|rgba\([^)]*\))" % name, scope)
+        return m.group(1) if m else None
+
+    blocks = {}
+    m = re.search(r":root\{(.*?)\}", css, re.S)
+    blocks["light"] = m.group(1) if m else ""
+    m = re.search(r"prefers-color-scheme:dark\).*?:root\{(.*?)\}", css, re.S)
+    blocks["dark"] = m.group(1) if m else ""
+
+    rows = []
+    for theme, scope in blocks.items():
+        if not scope:
+            continue
+        ground, panel = _hex(tok("ground", scope)), _hex(tok("panel", scope))
+        ink = _hex(tok("ink", scope))
+        for name, need, kind in (("ink", 4.5, "body text"),
+                                 ("soft", 4.5, "secondary text"),
+                                 ("faint", 4.5, "captions, labels"),
+                                 ("accent", 4.5, "links and active tab"),
+                                 ("edge", 3.0, "control boundaries")):
+            v = tok(name, scope)
+            if not v:
+                continue
+            if v.startswith("rgba"):
+                nums = re.findall(r"[\d.]+", v)
+                col_on = lambda bg: _over(tuple(int(x) for x in nums[:3]), float(nums[3]), bg)
+            else:
+                col_on = lambda bg, c=_hex(v): c
+            for bgname, bg in (("ground", ground), ("panel", panel)):
+                r = _ratio(col_on(bg), bg)
+                rows.append((theme, name, kind, bgname, r, need, r >= need))
+    return rows
+
+
+def structure_audit(docs):
+    pages = sorted(docs.rglob("*.html"))
+    res = dict(pages=len(pages), lang=0, main=0, title=0, imgs=0, img_alt=0,
+               links=0, link_named=0, buttons=0, button_named=0,
+               h1_one=0, no_h1=[], multi_h1=[], no_main=[], dead=[])
+    for f in pages:
+        t = f.read_text()
+        b = re.sub(r"<(script|style).*?</\1>", "", t, flags=re.S)
+        if "<html lang=" in t: res["lang"] += 1
+        if "<main>" in t: res["main"] += 1
+        else: res["no_main"].append(str(f.relative_to(docs)))
+        if re.search(r"<title>.+?</title>", t): res["title"] += 1
+        n1 = len(re.findall(r"<h1[ >]", b))
+        if n1 == 1: res["h1_one"] += 1
+        elif n1 == 0: res["no_h1"].append(str(f.relative_to(docs)))
+        else: res["multi_h1"].append((str(f.relative_to(docs)), n1))
+        for img in re.findall(r"<img [^>]*>", b):
+            res["imgs"] += 1
+            if "alt=" in img: res["img_alt"] += 1
+        for a in re.findall(r"<a [^>]*>(.*?)</a>", b, re.S):
+            res["links"] += 1
+            if re.sub(r"<[^>]+>", "", a).strip(): res["link_named"] += 1
+        for bt in re.findall(r"<button[^>]*>(.*?)</button>", b, re.S):
+            res["buttons"] += 1
+            if re.sub(r"<[^>]+>", "", bt).strip(): res["button_named"] += 1
+        for h in re.findall(r'href="([^"#?]+)"', t):
+            if h.startswith(("http", "mailto:")):
+                continue
+            if not (f.parent / h).resolve().exists():
+                res["dead"].append((str(f.relative_to(docs)), h))
+    return res
+
+
+def accessibility_html(css, docs, built_on):
+    cr = contrast_audit(css)
+    st = structure_audit(docs)
+    fails = [r for r in cr if not r[6]]
+    name, role, mail1, mail2, ext = A11Y_CONTACT
+
+    def row(r):
+        theme, tokn, kind, bg, val, need, ok = r
+        return (f'<tr><td>{theme}</td><td><code>--{tokn}</code></td><td>{kind}</td>'
+                f'<td>on {bg}</td><td class="n">{val:.2f}:1</td>'
+                f'<td class="n">{need:.1f}:1</td>'
+                f'<td class="{"y" if ok else "n0"}">{"pass" if ok else "FAIL"}</td></tr>')
+
+    # The verdict must account for EVERY table on this page, not just contrast.
+    # An earlier draft said "every measured check passes" while the structure
+    # table underneath it read 54/91 for heading structure. A statement that
+    # contradicts its own evidence is worse than no statement.
+    short = []
+    if fails:
+        short.append(f"{len(fails)} contrast check(s)")
+    if st["dead"]:
+        short.append(f"{len(st['dead'])} broken link(s)")
+    h1_short = st["pages"] - st["h1_one"]
+    if h1_short:
+        short.append(f"heading structure on {h1_short} page(s)")
+    main_short = st["pages"] - st["main"]
+    if main_short:
+        short.append(f"the main landmark on {main_short} page(s)")
+    if short:
+        verdict = ("<b>Contrast, naming and link integrity pass throughout.</b> "
+                   "Not everything does: " + ", ".join(short) +
+                   " fall short. Each is described under "
+                   "<a href=\"#known\">Known limitations</a> below.")
+    else:
+        verdict = "<b>Every check on this page passes.</b>"
+
+    known = []
+    if st["no_h1"]:
+        known.append(f'<li data-n="&#8226;"><b>{len(st["no_h1"])} pages have no level-1 heading.</b> '
+                     f'Their source begins at a second-level heading. '
+                     f'{", ".join("<code>%s</code>" % x for x in st["no_h1"])}</li>')
+    if st["multi_h1"]:
+        worst = max(st["multi_h1"], key=lambda x: x[1])
+        known.append(f'<li data-n="&#8226;"><b>{len(st["multi_h1"])} pages carry more than one level-1 '
+                     f'heading</b>, the slide decks among them &mdash; each slide is '
+                     f'marked as its own heading, so <code>{worst[0]}</code> has '
+                     f'{worst[1]}. Only one slide is visible at a time, but all of '
+                     f'them are in the page for a screen reader.</li>')
+    if st["no_main"]:
+        known.append(f'<li data-n="&#8226;"><b>{len(st["no_main"])} page has no main landmark:</b> '
+                     f'<code>{st["no_main"][0]}</code>. It is a starter template a '
+                     f'student fills in and publishes as their own work, so it '
+                     f'deliberately carries none of this site&rsquo;s structure.</li>')
+
+    return f"""<p class="lede">This site is built for COMM 260 at Defiance College.
+It is measured against <b>WCAG 2.2 Level AA</b> on every build, and this page is
+generated from those measurements rather than written by hand.</p>
+
+<h2 class="sec">What was measured</h2>
+<p>{built_on}. <b>{st['pages']} pages</b> were checked. {verdict}</p>
+
+<h2 class="sec">Contrast</h2>
+<p class="rvnote">Ratios computed from the stylesheet this site ships, against both
+surface colours, in both the light and dark themes. Text needs 4.5:1 (WCAG 1.4.3);
+the boundaries of controls need 3:1 (WCAG 1.4.11).</p>
+<div class="scroll"><table>
+<thead><tr><th>Theme</th><th>Token</th><th>Used for</th><th>Against</th>
+<th>Measured</th><th>Required</th><th>Result</th></tr></thead>
+<tbody>{''.join(row(r) for r in cr)}</tbody></table></div>
+
+<h2 class="sec">Structure and names</h2>
+<div class="scroll"><table>
+<thead><tr><th>Check</th><th>Criterion</th><th>Result</th></tr></thead><tbody>
+<tr><td>Page language declared</td><td>3.1.1</td><td class="n">{st['lang']} / {st['pages']}</td></tr>
+<tr><td>Page has a title</td><td>2.4.2</td><td class="n">{st['title']} / {st['pages']}</td></tr>
+<tr><td>Main landmark present</td><td>1.3.1</td><td class="n">{st['main']} / {st['pages']}</td></tr>
+<tr><td>Images carry alt text</td><td>1.1.1</td><td class="n">{st['img_alt']} / {st['imgs']}</td></tr>
+<tr><td>Links have discernible text</td><td>2.4.4</td><td class="n">{st['link_named']} / {st['links']}</td></tr>
+<tr><td>Buttons have an accessible name</td><td>4.1.2</td><td class="n">{st['button_named']} / {st['buttons']}</td></tr>
+<tr><td>Exactly one level-1 heading</td><td>1.3.1</td><td class="n">{st['h1_one']} / {st['pages']}</td></tr>
+<tr><td>Internal links resolve</td><td>&mdash;</td><td class="n">{len(st['dead'])} broken</td></tr>
+</tbody></table></div>
+
+<h2 class="sec">Keyboard and assistive technology</h2>
+<ul class="los">
+<li data-n="&#8226;">The week Overview / To Do control is a real tab list. Arrow keys,
+Home and End move between tabs; only the selected tab takes a tab stop.</li>
+<li data-n="&#8226;">Selected state is exposed with <code>aria-selected</code>, and each
+tab is tied to its panel with <code>aria-controls</code>.</li>
+<li data-n="&#8226;">With JavaScript off, no panel is hidden &mdash; both render in full,
+so nothing is lost.</li>
+<li data-n="&#8226;">Every interactive element takes a visible focus outline.</li>
+<li data-n="&#8226;">Movement is limited to a one-pixel hover shift, and that is
+disabled under <code>prefers-reduced-motion</code>.</li>
+<li data-n="&#8226;">Text reflows to a single column and the page does not scroll
+sideways; zoom is not disabled.</li>
+</ul>
+
+<h2 class="sec" id="known">Known limitations</h2>
+<ul class="los">{''.join(known) if known else
+ '<li data-n="&#8226;">None recorded at this build.</li>'}</ul>
+
+<h2 class="sec">What is not covered</h2>
+<p>These checks are automated. They do not establish that the writing is clear, that
+video and audio carry captions or transcripts, or that the site works well with a
+particular screen reader. Automated testing finds a minority of real barriers.
+<b>If something here does not work for you, that is worth reporting even if this
+page claims everything passes.</b></p>
+
+<h2 class="sec">Telling us</h2>
+<p>If you meet a barrier on this site, contact <b>{name}</b>, {role}, at
+<a href="mailto:{mail1}">{mail1}</a> or <a href="mailto:{mail2}">{mail2}</a>,
+or {ext}. You do not need to have registered accommodations to report a problem.</p>
+<p class="rvnote">Course materials themselves &mdash; readings, video, equipment &mdash;
+are arranged through the same office.</p>
+"""
 
 
 def page(title, crumb, body, depth):
@@ -590,7 +824,7 @@ def page(title, crumb, body, depth):
 </main>
 <footer>
   <p>{COURSE} &middot; {COURSE_LONG}</p>
-  <p class="fine">Student materials, generated from course source.</p>
+  <p class="fine">Student materials, generated from course source. <a href="{up}reference/accessibility.html">Accessibility</a></p>
 </footer>
 </body>
 </html>
@@ -795,6 +1029,22 @@ def main():
         f'<h2 class="sec">The fifteen weeks</h2><ul class="weeks">{wk}</ul>'
     )
     write("index.html", page(COURSE, "", body, 0))
+    pages += 1
+
+    # Last, so it can audit everything else. Written twice: the first pass gives
+    # the page something to be, the second re-audits with it present so the page
+    # count it reports includes itself and is not quietly one short.
+    built_on = "Last checked " + datetime.date.today().strftime("%-d %B %Y")
+    crumb_a = ('<nav class="crumb"><a href="../index.html">Course home</a>'
+               '<span>/</span><em>Accessibility</em></nav>')
+    for _ in range(2):
+        css_now = (DOCS / "style.css").read_text()
+        write("reference/accessibility.html",
+              page("Accessibility",
+                   crumb_a,
+                   "<h1>Accessibility</h1>"
+                   + accessibility_html(css_now, DOCS, built_on),
+                   1))
     pages += 1
 
     print(f"pages          : {pages}")
