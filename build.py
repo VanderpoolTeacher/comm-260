@@ -429,6 +429,7 @@ def outline_outcomes(md):
 
 
 def overview_html(outline_md):
+    """Panel contents only — the tab strip supplies the heading."""
     prose = ""
     for h in PROSE_HEADINGS:
         prose = _section(outline_md, h)
@@ -437,7 +438,7 @@ def overview_html(outline_md):
     paras = [x.strip() for x in prose.split("\n\n") if x.strip()
              and not x.strip().startswith("**Assessment")]
 
-    out = ['<section class="overview"><h2>Overview</h2>']
+    out = []
     for x in paras[:3]:
         out.append(f'<p>{_inline(x)}</p>')
 
@@ -451,13 +452,12 @@ def overview_html(outline_md):
     a = outline_assessment(outline_md)
     if a:
         out.append(f'<p class="asmt"><span>Assessment</span>{html.escape(a)}</p>')
-    out.append('</section>')
     return "".join(out)
 
 
 def todo_html(wnum, cards, review_hours):
-    """Mirrors the page top to bottom: the cards in order, then review material,
-    which is the last section on the page."""
+    """Panel contents only. Mirrors the page top to bottom: the cards in order,
+    then review material, which is the last section on the page."""
     lis = []
     for href, label, title in cards:
         verb = TODO_VERB.get(label, "Open")
@@ -469,9 +469,36 @@ def todo_html(wnum, cards, review_hours):
                    f'this week. Distributed in class.</span></li>')
     if not lis:
         return ""
-    return ('<section class="todo"><h2>To Do List</h2>'
-            f'<p class="rvnote">To successfully complete Week {wnum}, '
-            'please do the following:</p><ol>' + "".join(lis) + '</ol></section>')
+    return (f'<p class="rvnote">To successfully complete Week {wnum}, '
+            'please do the following:</p><ol>' + "".join(lis) + '</ol>')
+
+
+def week_tabs(wnum, overview, todo):
+    """Two tabs, one panel at a time.
+
+    No panel is marked hidden in the markup, so with JS off both panels render
+    stacked and nothing is lost. TABS_JS hides the inactive one on load.
+    """
+    if not overview and not todo:
+        return ""
+    tabs, panels, first = [], [], True
+    for key, label, inner in (("ov", "Overview", overview),
+                              ("td", "To Do List", todo)):
+        if not inner:
+            continue
+        on = " is-on" if first else ""
+        sel = "true" if first else "false"
+        tabs.append(f'<button type="button" role="tab" class="tab{on}" '
+                    f'id="t-{key}-{wnum}" aria-controls="p-{key}-{wnum}" '
+                    f'aria-selected="{sel}" tabindex="{"0" if first else "-1"}">'
+                    f'{label}</button>')
+        panels.append(f'<div class="tabpanel" id="p-{key}-{wnum}" role="tabpanel" '
+                      f'aria-labelledby="t-{key}-{wnum}">{inner}</div>')
+        first = False
+    return (f'<div class="tabs" data-tabs>'
+            f'<div class="tabstrip" role="tablist" '
+            f'aria-label="Week {wnum} summary">{"".join(tabs)}</div>'
+            f'{"".join(panels)}</div>')
 
 
 def page(title, crumb, body, depth):
@@ -625,9 +652,11 @@ def main():
         hrs_label = f"{total:.2f} h" if rd else ""
         td = todo_html(wnum, cards, hrs_label)
 
+        tabs = week_tabs(wnum, ov, td)
         body = (f'<h1>Week {wnum}<span class="sub">{html.escape(wtitle)}</span></h1>'
-                f'{ov}{td}'
-                f'<ul class="cards">{lis}</ul>{dia}{rv}')
+                f'{tabs}'
+                f'<ul class="cards">{lis}</ul>{dia}{rv}'
+                f'{TABS_JS if tabs else ""}')
         write(f"{wdir.name}/index.html", page(f"Week {wnum}", crumb, body, 1))
         index_rows.append((wdir.name, wnum, wtitle, len(cards)))
         WEEK_TITLES[wnum] = wtitle
@@ -700,6 +729,42 @@ def main():
     print(f"links kept     : {kept}")
     print(f"links unwrapped: {unwrapped}  (targets not published)")
     print(f"source         : {COURSE_DIR}")
+
+
+
+TABS_JS = """
+<script>
+(function(){
+  var w = document.querySelector('[data-tabs]');
+  if(!w) return;
+  var tabs = [].slice.call(w.querySelectorAll('[role=tab]')),
+      panels = [].slice.call(w.querySelectorAll('[role=tabpanel]'));
+  if(tabs.length < 2) return;
+  function show(n){
+    tabs.forEach(function(t,i){
+      var on = i === n;
+      t.classList.toggle('is-on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      panels[i].hidden = !on;
+    });
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click', function(){ show(i); });
+    t.addEventListener('keydown', function(e){
+      var n = null;
+      if(e.key === 'ArrowRight') n = (i+1) % tabs.length;
+      if(e.key === 'ArrowLeft')  n = (i-1+tabs.length) % tabs.length;
+      if(e.key === 'Home') n = 0;
+      if(e.key === 'End')  n = tabs.length-1;
+      if(n === null) return;
+      e.preventDefault(); show(n); tabs[n].focus();
+    });
+  });
+  show(0);   // panels are unhidden in the markup, so JS-off shows both
+})();
+</script>
+"""
 
 
 DECK_JS = """
@@ -910,12 +975,19 @@ body.presenting{overflow:hidden}
 .dhud span{font-size:.85rem;color:var(--soft);font-variant-numeric:tabular-nums}
 
 
-.overview{margin:0 0 1.6rem}
-.overview h2,.todo h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--faint);font-weight:400;margin:0 0 .6rem}
-.overview p{font-size:.98rem;color:var(--soft);max-width:62ch;margin:0 0 .85rem}
-.overview strong{color:var(--ink)}
-.overview .lolead{font-size:.86rem;color:var(--faint);margin:1.1rem 0 .5rem}
+.tabs{margin:0 0 1.9rem}
+.tabstrip{display:flex;gap:.35rem;border-bottom:1px solid var(--rule);margin-bottom:1.2rem}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  margin-bottom:-1px;padding:.5rem .85rem;cursor:pointer;font:inherit;
+  font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);transition:color .12s,border-color .12s}
+.tab:hover{color:var(--ink)}
+.tab.is-on{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+
+.tabpanel p{font-size:.98rem;color:var(--soft);max-width:62ch;margin:0 0 .85rem}
+.tabpanel strong{color:var(--ink)}
+.tabpanel .lolead{font-size:.86rem;color:var(--faint);margin:1.1rem 0 .5rem}
 ul.los{list-style:none;margin:0 0 1rem;padding:0;display:flex;flex-direction:column;gap:.42rem}
 ul.los li{font-size:.93rem;color:var(--soft);max-width:62ch;padding-left:2.6rem;position:relative}
 ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
@@ -924,14 +996,17 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
   color:var(--soft);margin:0}
 .asmt span{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--faint);margin-bottom:.15rem}
-.todo{margin:0 0 1.8rem;border-top:1px solid var(--rule);padding-top:1.3rem}
-.todo ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
-.todo li{display:flex;gap:1rem;align-items:baseline;font-size:.94rem;color:var(--soft)}
-.todo li a{color:var(--ink)}
-.todo li a:hover{color:var(--accent)}
-.todo .v{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+.tabpanel ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+.tabpanel ol li{display:flex;gap:1rem;align-items:baseline;font-size:.94rem;color:var(--soft)}
+.tabpanel ol li a{color:var(--ink)}
+.tabpanel ol li a:hover{color:var(--accent)}
+.tabpanel .v{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
   min-width:9ch;flex:none}
-@media(max-width:34rem){.todo li{flex-direction:column;gap:.15rem}}
+@media(max-width:34rem){
+  .tabpanel ol li{flex-direction:column;gap:.15rem}
+  .tab{padding:.5rem .6rem}
+}
+
 .diagrams{margin-top:2.4rem;border-top:1px solid var(--rule);padding-top:1.4rem}
 .diagrams h2{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--faint);font-weight:400;margin:0 0 .5rem}
