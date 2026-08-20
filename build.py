@@ -921,7 +921,12 @@ def link_sections(doc):
             return m.group(0)
         return f'{open_tag}<a class="seclink" href="#{hid}">{inner}</a>{close}'
 
-    return re.sub(r"(<t[dh][^>]*>)(.*?)(</t[dh]>)", cell, doc, flags=re.S)
+    doc = re.sub(r"(<t[dh][^>]*>)(.*?)(</t[dh]>)", cell, doc, flags=re.S)
+
+    # A table wider than the column must scroll inside its own box, never push
+    # the page sideways. The glossary alone has fourteen and none were wrapped.
+    return re.sub(r"(<table[\s>].*?</table>)",
+                  r'<div class="scroll">\1</div>', doc, flags=re.S)
 
 
 def page(title, crumb, body, depth):
@@ -1518,11 +1523,31 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
 .doc pre{background:var(--panel);border:1px solid var(--rule);padding:1rem;overflow-x:auto}
 .doc pre code{background:none;border:0;padding:0}
 .tbl{overflow-x:auto;margin:1.4rem 0}
-.doc table{border-collapse:collapse;width:100%;min-width:28rem;font-size:.94rem}
-.doc th,.doc td{text-align:left;padding:.55em .7em;border-bottom:1px solid var(--rule);
-  vertical-align:top}
-.doc th{font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--faint);font-weight:400}
+/* .scroll was used on three pages and never defined, so a wide table pushed
+   the page sideways instead of scrolling inside its own box. */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;
+  border:1px solid var(--edge);border-radius:2px;margin:1.4rem 0}
+.scroll table{margin:0;border:0}
+
+main table{border-collapse:collapse;width:100%;font-size:.93rem;
+  background:var(--panel);border:1px solid var(--edge);border-radius:2px}
+main th,main td{text-align:left;padding:.8rem .95rem;vertical-align:top;
+  border-bottom:1px solid var(--rule);border-right:1px solid var(--rule)}
+main th:last-child,main td:last-child{border-right:0}
+main tbody tr:last-child td{border-bottom:0}
+main thead th{background:var(--ground);color:var(--ink);font-weight:600;
+  font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  border-bottom:1px solid var(--edge)}
+main tbody tr:hover td{background:var(--ground)}
+/* Slides keep their own compact table; the deck is not a document. */
+.sbody table{background:none;border:0;font-size:.9em}
+.sbody th,.sbody td{padding:.45em .6em;border-right:0}
+@media(max-width:34rem){main th,main td{padding:.6rem .65rem}}
+
+.doc table{border-collapse:collapse;width:100%;min-width:28rem;font-size:.93rem}
+.doc th,.doc td{text-align:left;vertical-align:top}
+.doc th{font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink);font-weight:600}
 .doc img{max-width:100%;height:auto}
 
 footer{border-top:1px solid var(--rule);margin-top:4rem;padding:1.6rem clamp(1rem,4vw,2rem) 3rem}
