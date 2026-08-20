@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Week 6 &middot; COMM 260</title>
-<link rel="stylesheet" href="../style.css?v=518163b1">
+<link rel="stylesheet" href="../style.css?v=ac36df7d">
 </head>
 <body>
 <header class="bar">
-  <a class="home" href="../index.html"><b>COMM 260</b> <span>Introduction to Digital Media Production</span></a>
+  <a class="home" href="../index.html"><svg class="hico" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.9 10.7 11.3 3.5a1.1 1.1 0 0 1 1.4 0l8.4 7.2"/><path d="M5.4 9.1v10.3a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1V9.1"/><path d="M9.7 20.4v-5.1h4.6v5.1"/></svg><b>COMM 260</b> <span>Introduction to Digital Media Production</span></a>
 </header>
 <main>
 <nav class="crumb"><a href="../index.html">All weeks</a><span>/</span><em>Week 6</em></nav>
-<h1>Week 6<span class="sub">Editing and sound design</span></h1><ul class="cards"><li><a href="lesson.html"><span class="kind">Lesson</span><span class="t">Week 6 · Editing and sound design — Lesson</span></a></li>
+<h1>Week 6<span class="sub">Editing and sound design</span></h1><div class="tabs" data-tabs><div class="tabstrip" role="tablist" aria-label="Week 6 summary"><button type="button" role="tab" class="tab is-on" id="t-ov-6" aria-controls="p-ov-6" aria-selected="true" tabindex="0">Overview</button><button type="button" role="tab" class="tab" id="t-td-6" aria-controls="p-td-6" aria-selected="false" tabindex="-1">To Do List</button></div><div class="tabpanel" id="p-ov-6" role="tabpanel" aria-labelledby="t-ov-6"><p>Prove your edit is <strong>better than what you started with</strong> — by submitting both, so the claim is checkable rather than asserted.</p><p class="lolead">By the end of this week you can</p><ul class="los"><li data-n="6.1">Edit recorded speech for clarity without making it sound processed</li><li data-n="6.2">Make a structural cut that changes how the piece lands, and say why</li><li data-n="6.3">Balance music under speech at levels that serve both</li><li data-n="6.4">Demonstrate the improvement over your source by comparison</li></ul><p class="asmt"><span>Assessment</span>module summative · 10% of the course grade.</p></div><div class="tabpanel" id="p-td-6" role="tabpanel" aria-labelledby="t-td-6"><p class="rvnote">To successfully complete Week 6, please do the following:</p><ol><li><span class="v">Read</span><a href="lesson.html">Week 6 · Editing and sound design — Lesson</a></li><li><span class="v">Review</span><a href="slides.html">15 slides from class</a></li><li><span class="v">Do</span><a href="lab.html">Week 6 Lab — Build a 60-second piece</a></li><li><span class="v">Submit</span><a href="assignment.html">Week 6 Assignment — 60-second edited piece</a></li><li><span class="v">Review</span><span>Provided material &mdash; 3.25 h this week. Distributed in class.</span></li></ol></div></div><ul class="cards"><li><a href="lesson.html"><span class="kind">Lesson</span><span class="t">Week 6 · Editing and sound design — Lesson</span></a></li>
 <li><a href="slides.html"><span class="kind">Slides</span><span class="t">15 slides from class</span></a></li>
 <li><a href="lab.html"><span class="kind">Lab</span><span class="t">Week 6 Lab — Build a 60-second piece</span></a></li>
 <li><a href="assignment.html"><span class="kind">Assignment</span><span class="t">Week 6 Assignment — 60-second edited piece</span></a></li></ul><section class="diagrams"><h2>Diagrams</h2><p class="rvnote">From the lesson. Yours to keep &mdash; print them, mark them up.</p><figure><img src="../assets/06-1-room-tone-under-a-join.svg" alt="Two schematic waveforms. Above, two speech clips butted together with a flat silent gap between them, marked: the room disappears. Below, the same two clips with low continuous room tone filling the gap, marked: the join vanishes." loading="lazy"><figcaption>Room tone under a join</figcaption></figure></section><section class="review"><h2>Review before class<span class="hrs">3.25 h</span></h2><p class="rvnote">Material is provided in class. This is on top of the lesson, the lab and the assignment.</p><div class="standing"><p><strong>Read, watch and listen against what we are doing in class
@@ -29,6 +29,38 @@ you have not finished with it yet.</strong> That is the same demand
 every assignment in this course makes, practised on work nobody is
 grading.</p>
 <p class="gl">Terms are in the <a href="../reference/glossary.html">Glossary</a>, by module.</p></div></section>
+<script>
+(function(){
+  var w = document.querySelector('[data-tabs]');
+  if(!w) return;
+  var tabs = [].slice.call(w.querySelectorAll('[role=tab]')),
+      panels = [].slice.call(w.querySelectorAll('[role=tabpanel]'));
+  if(tabs.length < 2) return;
+  function show(n){
+    tabs.forEach(function(t,i){
+      var on = i === n;
+      t.classList.toggle('is-on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      panels[i].hidden = !on;
+    });
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click', function(){ show(i); });
+    t.addEventListener('keydown', function(e){
+      var n = null;
+      if(e.key === 'ArrowRight') n = (i+1) % tabs.length;
+      if(e.key === 'ArrowLeft')  n = (i-1+tabs.length) % tabs.length;
+      if(e.key === 'Home') n = 0;
+      if(e.key === 'End')  n = tabs.length-1;
+      if(n === null) return;
+      e.preventDefault(); show(n); tabs[n].focus();
+    });
+  });
+  show(0);   // panels are unhidden in the markup, so JS-off shows both
+})();
+</script>
+
 </main>
 <footer>
   <p>COMM 260 &middot; Introduction to Digital Media Production</p>

@@ -529,6 +529,10 @@ CANON_TOKENS = [
     ("--faint:rgba(26,29,31,.45)",    "--faint:rgba(26,29,31,.63)"),
     ("--soft:rgba(233,230,222,.66)",  "--soft:rgba(233,230,222,.80)"),
     ("--faint:rgba(233,230,222,.42)", "--faint:rgba(233,230,222,.52)"),
+    ("--rule:rgba(26,29,31,.16); --accent",
+     "--rule:rgba(26,29,31,.16); --edge:rgba(26,29,31,.49); --accent"),
+    ("--rule:rgba(233,230,222,.16); --accent",
+     "--rule:rgba(233,230,222,.16); --edge:rgba(233,230,222,.38); --accent"),
 ]
 
 CHROME_CSS = """
@@ -900,13 +904,15 @@ STYLE = """
 :root{
   --ground:#E9E6DE; --panel:#F2F0EA; --ink:#1A1D1F;
   --soft:rgba(26,29,31,.82); --faint:rgba(26,29,31,.63);
-  --rule:rgba(26,29,31,.16); --accent:#2F5D50; --alert:#7A3B52;
+  --rule:rgba(26,29,31,.16); --edge:rgba(26,29,31,.49);
+  --accent:#2F5D50; --alert:#7A3B52;
 }
 @media (prefers-color-scheme:dark){
   :root{
     --ground:#15191A; --panel:#1D2223; --ink:#E9E6DE;
     --soft:rgba(233,230,222,.80); --faint:rgba(233,230,222,.52);
-    --rule:rgba(233,230,222,.16); --accent:#7FB3A0; --alert:#C98BA0;
+    --rule:rgba(233,230,222,.16); --edge:rgba(233,230,222,.38);
+    --accent:#7FB3A0; --alert:#C98BA0;
   }
 }
 *{box-sizing:border-box}
@@ -947,8 +953,9 @@ h2.sec:first-of-type{margin-top:0}
 
 ul.weeks,ul.cards{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
 ul.weeks a,ul.cards a{display:flex;gap:1rem;align-items:baseline;padding:.9rem 1.1rem;
-  background:var(--panel);border:1px solid var(--rule);text-decoration:none;color:var(--ink)}
-ul.weeks a:hover,ul.cards a:hover{border-color:var(--accent)}
+  background:var(--panel);border:1px solid var(--edge);text-decoration:none;color:var(--ink)}
+ul.weeks a:hover,ul.cards a:hover{border-color:var(--accent);color:var(--accent)}
+ul.weeks a:focus-visible,ul.cards a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .wk{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:700;min-width:2ch}
 .t{flex:1;min-width:0}
 .c{color:var(--faint);font-size:.85rem}
@@ -1053,7 +1060,7 @@ body.presenting{overflow:hidden}
 
 
 .tabs{margin:0 0 1.9rem}
-.tabstrip{display:flex;gap:.35rem;border-bottom:1px solid var(--rule);margin-bottom:1.2rem}
+.tabstrip{display:flex;gap:.35rem;border-bottom:1px solid var(--edge);margin-bottom:1.2rem}
 .tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
   margin-bottom:-1px;padding:.5rem .85rem;cursor:pointer;font:inherit;
   font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
@@ -1075,8 +1082,14 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
   color:var(--faint);margin-bottom:.15rem}
 .tabpanel ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
 .tabpanel ol li{display:flex;gap:1rem;align-items:baseline;font-size:.94rem;color:var(--soft)}
-.tabpanel ol li a{color:var(--ink)}
-.tabpanel ol li a:hover{color:var(--accent)}
+.tabpanel ol li a{display:inline-flex;align-items:center;gap:.5rem;
+  padding:.4rem .8rem;border:1px solid var(--edge);border-radius:2px;
+  background:var(--panel);color:var(--ink);text-decoration:none;
+  min-height:2.2rem;transition:border-color .12s,color .12s}
+.tabpanel ol li a:hover{border-color:var(--accent);color:var(--accent)}
+.tabpanel ol li a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabpanel ol li>span:not(.v){padding:.4rem 0}
+@media (prefers-reduced-motion:reduce){.tabpanel ol li a{transition:none}}
 .tabpanel .v{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
   min-width:9ch;flex:none}
 @media(max-width:34rem){
