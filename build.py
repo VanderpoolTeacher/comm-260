@@ -805,6 +805,52 @@ disability services office.</p>
 """
 
 
+
+def link_sections(doc):
+    """Give headings ids, then link table cells that name one.
+
+    Deliberately conservative. The glossary alone has 98 bold first-column
+    cells and almost all of them are terms, not sections — so a cell is linked
+    only when its text is EXACTLY a heading on the same page, or exactly a
+    heading minus a leading "Part ". Anything else is left as plain text.
+    """
+    heads = {}
+
+    def tag(m):
+        lvl, attrs, inner = m.group(1), m.group(2), m.group(3)
+        text = re.sub(r"<[^>]+>", "", inner).strip()
+        if not text:
+            return m.group(0)
+        hid = slugify(text)
+        if hid in heads.values():
+            n = 2
+            while f"{hid}-{n}" in heads.values():
+                n += 1
+            hid = f"{hid}-{n}"
+        heads[text] = hid
+        return f'<h{lvl}{attrs} id="{hid}">{inner}</h{lvl}>'
+
+    doc = re.sub(r"<h([1-6])([^>]*)>(.*?)</h\1>", tag, doc, flags=re.S)
+
+    lookup = {}
+    for text, hid in heads.items():
+        lookup[text] = hid
+        if text.lower().startswith("part "):
+            lookup[text[5:].strip()] = hid
+
+    def cell(m):
+        open_tag, inner, close = m.group(1), m.group(2), m.group(3)
+        if "<a " in inner:
+            return m.group(0)
+        text = re.sub(r"<[^>]+>", "", inner).strip()
+        hid = lookup.get(text)
+        if not hid:
+            return m.group(0)
+        return f'{open_tag}<a class="seclink" href="#{hid}">{inner}</a>{close}'
+
+    return re.sub(r"(<t[dh][^>]*>)(.*?)(</t[dh]>)", cell, doc, flags=re.S)
+
+
 def page(title, crumb, body, depth):
     up = "../" * depth
     return f"""<!doctype html>
@@ -895,7 +941,7 @@ def main():
                 f'<span>/</span><a href="index.html">Week {wnum}</a>'
                 f'<span>/</span><em>{html.escape(label)}</em></nav>'
             )
-            write(out, page(title, crumb, f'<article class="doc">{md_to_html(text)}</article>', 1))
+            write(out, page(title, crumb, f'<article class="doc">{link_sections(md_to_html(text))}</article>', 1))
             cards.append((os.path.relpath(out, wdir.name), label, title))
             pages += 1
 
@@ -1009,7 +1055,7 @@ def main():
         kept += st["kept"]; unwrapped += st["unwrapped"]
         crumb = ('<nav class="crumb"><a href="../index.html">Course home</a>'
                  f'<span>/</span><em>{html.escape(label)}</em></nav>')
-        write(out, page(title, crumb, f'<article class="doc">{md_to_html(text)}</article>', 1))
+        write(out, page(title, crumb, f'<article class="doc">{link_sections(md_to_html(text))}</article>', 1))
         ref_rows.append((out, label, blurb))
         pages += 1
 
@@ -1375,6 +1421,10 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
 .doc h2{font-size:1.35rem;line-height:1.25;margin:2.4rem 0 .8rem;letter-spacing:-.012em}
 .doc h3{font-size:1.1rem;margin:1.8rem 0 .6rem}
 .doc p,.doc li{max-width:80ch}
+.doc h1,.doc h2,.doc h3{scroll-margin-top:1.5rem}
+.seclink{color:inherit;text-decoration:none;border-bottom:1px solid var(--edge)}
+.seclink:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.seclink:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .doc ul,.doc ol{padding-left:1.3rem}
 .doc li{margin:.35rem 0}
 .doc hr{border:0;border-top:1px solid var(--rule);margin:2.2rem 0}
