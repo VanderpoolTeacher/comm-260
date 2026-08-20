@@ -587,8 +587,9 @@ def add_chrome(path, depth):
 # style.css and the structural counts come from walking docs/. If something
 # regresses, the published report says so rather than going quietly stale.
 
-A11Y_CONTACT = ("Nikki Arnold", "Accessibility Services Coordinator and Case Manager",
-                "narnold@defiance.edu", "accessibility@defiance.edu", "extension 2445")
+# Deliberately institution-neutral: this site is general content and is not
+# tied to one college. Naming a real office here would be wrong in any other
+# context, and inventing one would be worse, so the route is the instructor.
 
 
 def _srgb(c):
@@ -690,7 +691,6 @@ def accessibility_html(css, docs, built_on):
     cr = contrast_audit(css)
     st = structure_audit(docs)
     fails = [r for r in cr if not r[6]]
-    name, role, mail1, mail2, ext = A11Y_CONTACT
 
     def row(r):
         theme, tokn, kind, bg, val, need, ok = r
@@ -740,7 +740,7 @@ def accessibility_html(css, docs, built_on):
                      f'student fills in and publishes as their own work, so it '
                      f'deliberately carries none of this site&rsquo;s structure.</li>')
 
-    return f"""<p class="lede">This site is built for COMM 260 at Defiance College.
+    return f"""<p class="lede">This site holds the student materials for {COURSE}.
 It is measured against <b>WCAG 2.2 Level AA</b> on every build, and this page is
 generated from those measurements rather than written by hand.</p>
 
@@ -795,12 +795,13 @@ particular screen reader. Automated testing finds a minority of real barriers.
 <b>If something here does not work for you, that is worth reporting even if this
 page claims everything passes.</b></p>
 
-<h2 class="sec">Telling us</h2>
-<p>If you meet a barrier on this site, contact <b>{name}</b>, {role}, at
-<a href="mailto:{mail1}">{mail1}</a> or <a href="mailto:{mail2}">{mail2}</a>,
-or {ext}. You do not need to have registered accommodations to report a problem.</p>
-<p class="rvnote">Course materials themselves &mdash; readings, video, equipment &mdash;
-are arranged through the same office.</p>
+<h2 class="sec">Reporting a barrier</h2>
+<p><b>Tell your instructor.</b> You do not need to have registered accommodations,
+and you do not need to know which guideline is at issue &mdash; describing what you
+could not do is enough.</p>
+<p>Accommodations themselves, and access to course materials such as readings,
+video and equipment, are arranged through your institution&rsquo;s accessibility or
+disability services office.</p>
 """
 
 
