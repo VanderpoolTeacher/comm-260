@@ -827,13 +827,13 @@ DECK_JS = """
 STYLE = """
 :root{
   --ground:#E9E6DE; --panel:#F2F0EA; --ink:#1A1D1F;
-  --soft:rgba(26,29,31,.66); --faint:rgba(26,29,31,.45);
+  --soft:rgba(26,29,31,.82); --faint:rgba(26,29,31,.63);
   --rule:rgba(26,29,31,.16); --accent:#2F5D50; --alert:#7A3B52;
 }
 @media (prefers-color-scheme:dark){
   :root{
     --ground:#15191A; --panel:#1D2223; --ink:#E9E6DE;
-    --soft:rgba(233,230,222,.66); --faint:rgba(233,230,222,.42);
+    --soft:rgba(233,230,222,.80); --faint:rgba(233,230,222,.52);
     --rule:rgba(233,230,222,.16); --accent:#7FB3A0; --alert:#C98BA0;
   }
 }
@@ -848,11 +848,11 @@ a{color:var(--accent)}
 a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 .bar{border-bottom:1px solid var(--rule);background:var(--panel)}
-.home{display:block;max-width:52rem;margin:0 auto;padding:.9rem clamp(1rem,4vw,2rem);
+.home{display:block;max-width:80ch;margin:0 auto;padding:.9rem clamp(1rem,4vw,2rem);
   text-decoration:none;color:var(--ink)}
 .home span{color:var(--faint);margin-left:.5rem;font-size:.9rem}
 
-main{max-width:52rem;margin:0 auto;padding:clamp(1.4rem,5vw,3rem) clamp(1rem,4vw,2rem)}
+main{max-width:80ch;margin:0 auto;padding:clamp(1.4rem,5vw,3rem) clamp(1rem,4vw,2rem)}
 
 .crumb{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;
   font-size:.82rem;color:var(--faint);margin-bottom:1.6rem}
@@ -884,7 +884,7 @@ ul.weeks .c{white-space:nowrap}
   color:var(--faint);font-weight:400;margin:0 0 .5rem}
 .review .hrs{color:var(--accent);font-weight:700;letter-spacing:0;
   text-transform:none;font-size:1rem;font-variant-numeric:tabular-nums}
-.rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:52ch}
+.rvnote{color:var(--faint);font-size:.86rem;margin:0 0 1rem;max-width:80ch}
 .deck{border:1px solid var(--rule);background:var(--panel);
   min-height:22rem;display:flex;cursor:pointer}
 .deck:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -985,11 +985,11 @@ body.presenting{overflow:hidden}
 .tab.is-on{color:var(--accent);border-bottom-color:var(--accent)}
 .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 
-.tabpanel p{font-size:.98rem;color:var(--soft);max-width:62ch;margin:0 0 .85rem}
+.tabpanel p{font-size:.98rem;color:var(--soft);max-width:80ch;margin:0 0 .85rem}
 .tabpanel strong{color:var(--ink)}
 .tabpanel .lolead{font-size:.86rem;color:var(--faint);margin:1.1rem 0 .5rem}
 ul.los{list-style:none;margin:0 0 1rem;padding:0;display:flex;flex-direction:column;gap:.42rem}
-ul.los li{font-size:.93rem;color:var(--soft);max-width:62ch;padding-left:2.6rem;position:relative}
+ul.los li{font-size:.93rem;color:var(--soft);max-width:80ch;padding-left:2.6rem;position:relative}
 ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
   font-size:.72rem;letter-spacing:.06em;color:var(--accent);font-variant-numeric:tabular-nums}
 .asmt{border-left:3px solid var(--accent);padding-left:.9rem;font-size:.9rem;
@@ -1017,7 +1017,7 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
 
 .standing{border-left:3px solid var(--accent);padding-left:1.1rem;margin-top:1rem}
 .standing blockquote{margin:0;padding:0;border:0}
-.standing p{margin:0 0 .7rem;font-size:.95rem;color:var(--soft);max-width:62ch}
+.standing p{margin:0 0 .7rem;font-size:.95rem;color:var(--soft);max-width:80ch}
 .standing p:last-child{margin-bottom:0}
 .standing .gl{margin-top:.9rem;font-size:.9rem}
 .standing strong{color:var(--ink)}
@@ -1026,7 +1026,7 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
 .doc h1{font-size:clamp(1.7rem,5vw,2.4rem)}
 .doc h2{font-size:1.35rem;line-height:1.25;margin:2.4rem 0 .8rem;letter-spacing:-.012em}
 .doc h3{font-size:1.1rem;margin:1.8rem 0 .6rem}
-.doc p,.doc li{max-width:64ch}
+.doc p,.doc li{max-width:80ch}
 .doc ul,.doc ol{padding-left:1.3rem}
 .doc li{margin:.35rem 0}
 .doc hr{border:0;border-top:1px solid var(--rule);margin:2.2rem 0}
@@ -1045,7 +1045,7 @@ ul.los li::before{content:attr(data-n);position:absolute;left:0;top:.1em;
 .doc img{max-width:100%;height:auto}
 
 footer{border-top:1px solid var(--rule);margin-top:4rem;padding:1.6rem clamp(1rem,4vw,2rem) 3rem}
-footer p{max-width:52rem;margin:0 auto;color:var(--faint);font-size:.85rem}
+footer p{max-width:80ch;margin:0 auto;color:var(--faint);font-size:.85rem}
 footer .fine{margin-top:.3rem}
 
 @media (max-width:34rem){
