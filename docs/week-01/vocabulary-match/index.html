@@ -7,14 +7,14 @@
 <style>
 :root{
   --ground:#E9E6DE; --panel:#F2F0EA; --ink:#1A1D1F;
-  --soft:rgba(26,29,31,.66); --faint:rgba(26,29,31,.45);
+  --soft:rgba(26,29,31,.82); --faint:rgba(26,29,31,.63);
   --rule:rgba(26,29,31,.16); --accent:#2F5D50; --alert:#7A3B52;
   --ok-bg:rgba(47,93,80,.10); --no-bg:rgba(122,59,82,.10);
 }
 @media (prefers-color-scheme:dark){
   :root{
     --ground:#15191A; --panel:#1D2223; --ink:#E9E6DE;
-    --soft:rgba(233,230,222,.66); --faint:rgba(233,230,222,.42);
+    --soft:rgba(233,230,222,.80); --faint:rgba(233,230,222,.52);
     --rule:rgba(233,230,222,.16); --accent:#7FB3A0; --alert:#C98BA0;
     --ok-bg:rgba(127,179,160,.12); --no-bg:rgba(201,139,160,.12);
   }
@@ -60,9 +60,20 @@ button:hover{border-color:var(--accent)}
 .locked{background:var(--panel);border:1px dashed var(--rule);padding:1.1rem;color:var(--soft);margin-top:.8rem}
 .locked b{color:var(--ink)}
 footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--rule);color:var(--faint);font-size:.85rem}
+
+.bar{border-bottom:1px solid var(--rule);background:var(--panel)}
+.home{display:flex;align-items:baseline;gap:.55rem;max-width:80ch;margin:0 auto;
+  padding:.9rem clamp(1rem,4vw,2rem);text-decoration:none;color:var(--ink)}
+.home span{color:var(--faint);font-size:.9rem}
+.hico{flex:none;align-self:center;color:var(--accent);transition:transform .12s}
+.home:hover .hico{transform:translateY(-1px)}
+.home:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){.hico{transition:none}.home:hover .hico{transform:none}}
+@media(max-width:26rem){.home span{display:none}}
 </style>
 </head>
 <body>
+<header class="bar"><a class="home" href="../../index.html"><svg class="hico" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.9 10.7 11.3 3.5a1.1 1.1 0 0 1 1.4 0l8.4 7.2"/><path d="M5.4 9.1v10.3a1 1 0 0 0 1 1h11.2a1 1 0 0 0 1-1V9.1"/><path d="M9.7 20.4v-5.1h4.6v5.1"/></svg><b>COMM 260</b> <span>Introduction to Digital Media Production</span></a></header>
 <main>
   <p class="eyebrow">COMM 260 · Week 1 · Interactive</p>
   <h1>Module 1 vocabulary match</h1>

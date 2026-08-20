@@ -512,6 +512,60 @@ HOME_ICON = (
 )
 
 
+
+# --- Chrome for copied interactive pages ------------------------------------
+#
+# Interactives are copied wholesale from student-files/ and carry their own
+# inlined stylesheet, including their own copy of the palette. That copy drifts:
+# it still held the pre-2026-08-20 --faint values that fail WCAG AA. This puts
+# the header on them and re-syncs the tokens.
+#
+# Applied only to pages that already brand themselves "· <COURSE>" in the title.
+# week-12/landing-page is a starter template the student publishes as their own
+# work — it must NOT get course chrome.
+
+CANON_TOKENS = [
+    ("--soft:rgba(26,29,31,.66)",     "--soft:rgba(26,29,31,.82)"),
+    ("--faint:rgba(26,29,31,.45)",    "--faint:rgba(26,29,31,.63)"),
+    ("--soft:rgba(233,230,222,.66)",  "--soft:rgba(233,230,222,.80)"),
+    ("--faint:rgba(233,230,222,.42)", "--faint:rgba(233,230,222,.52)"),
+]
+
+CHROME_CSS = """
+.bar{border-bottom:1px solid var(--rule);background:var(--panel)}
+.home{display:flex;align-items:baseline;gap:.55rem;max-width:80ch;margin:0 auto;
+  padding:.9rem clamp(1rem,4vw,2rem);text-decoration:none;color:var(--ink)}
+.home span{color:var(--faint);font-size:.9rem}
+.hico{flex:none;align-self:center;color:var(--accent);transition:transform .12s}
+.home:hover .hico{transform:translateY(-1px)}
+.home:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){.hico{transition:none}.home:hover .hico{transform:none}}
+@media(max-width:26rem){.home span{display:none}}
+"""
+
+
+def add_chrome(path, depth):
+    """Header + palette sync for a copied interactive. Returns True if applied."""
+    t = path.read_text()
+    if f"&middot; {COURSE}</title>" not in t and f"· {COURSE}</title>" not in t:
+        return False          # not a course page — leave it alone
+    if 'class="home"' in t:
+        return False          # already chromed
+
+    for old, new in CANON_TOKENS:
+        t = t.replace(old, new)
+
+    up = "../" * depth
+    header = (f'<header class="bar">'
+              f'<a class="home" href="{up}index.html">{HOME_ICON}'
+              f'<b>{COURSE}</b> <span>{COURSE_LONG}</span></a>'
+              f'</header>')
+    t = t.replace("</style>", CHROME_CSS + "</style>", 1)
+    t = t.replace("<body>", "<body>\n" + header, 1)
+    path.write_text(t)
+    return True
+
+
 def page(title, crumb, body, depth):
     up = "../" * depth
     return f"""<!doctype html>
@@ -568,6 +622,7 @@ def main():
         shutil.copytree(adir, DOCS / 'assets', dirs_exist_ok=True)
     standing_html = md_to_html(standing) if standing else ""
     kept = unwrapped = pages = 0
+    chromed = []
     index_rows = []
 
     for wdir, wnum, items in weeks:
@@ -586,6 +641,10 @@ def main():
                 shutil.copytree(f, DOCS / pathlib.PurePosixPath(out).parent,
                                 dirs_exist_ok=True,
                                 ignore=shutil.ignore_patterns("meta.json"))
+                for ix in (DOCS / pathlib.PurePosixPath(out).parent).rglob("index.html"):
+                    d = len(ix.relative_to(DOCS).parts) - 1
+                    if add_chrome(ix, d):
+                        chromed.append(str(ix.relative_to(DOCS)))
                 cards.append((os.path.relpath(out, wdir.name), label, override))
                 continue
             text = f.read_text()
@@ -739,6 +798,8 @@ def main():
     print(f"reference docs : {len(ref_rows)}")
     print(f"links kept     : {kept}")
     print(f"links unwrapped: {unwrapped}  (targets not published)")
+    if chromed:
+        print(f"chromed        : {len(chromed)}  {', '.join(chromed)}")
     print(f"source         : {COURSE_DIR}")
 
 
