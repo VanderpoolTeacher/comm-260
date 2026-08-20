@@ -670,7 +670,7 @@ def main():
             crumbd = (f'<nav class="crumb"><a href="../index.html">All weeks</a>'
                       f'<span>/</span><a href="index.html">Week {wnum}</a>'
                       f'<span>/</span><em>Slides</em></nav>')
-            dbody = (f'<h1>Week {wnum} slides<span class="sub">{html.escape(wtitle)}</span></h1>'
+            dbody = (f'<h1>Week {wnum} slides &middot; {html.escape(wtitle)}</h1>'
                      f'<p class="rvnote">What was on screen in class. '
                      f'Arrow keys or click to move.</p>'
                      f'<div class="deckwrap" id="deckwrap">'
@@ -727,7 +727,7 @@ def main():
         td = todo_html(wnum, cards, hrs_label)
 
         tabs = week_tabs(wnum, ov, td)
-        body = (f'<h1>Week {wnum}<span class="sub">{html.escape(wtitle)}</span></h1>'
+        body = (f'<h1>Week {wnum} &middot; {html.escape(wtitle)}</h1>'
                 f'{tabs}'
                 f'<ul class="cards">{lis}</ul>{dia}{rv}'
                 f'{TABS_JS if tabs else ""}')
@@ -946,6 +946,9 @@ h1{font-size:clamp(1.8rem,5.5vw,2.7rem);line-height:1.12;letter-spacing:-.022em;
   margin:0 0 1.3rem;text-wrap:balance}
 h1 .sub{display:block;font-size:.46em;font-weight:400;color:var(--soft);
   margin-top:.5rem;letter-spacing:0}
+/* Week headings are a single line at one level: "Week 1 · Visual literacy".
+   No lighter tail, and deliberately not nowrap -- a long topic must wrap on a
+   phone rather than overflow. */
 .lede{font-size:1.06rem;color:var(--soft);max-width:44ch;margin:0 0 2.4rem}
 h2.sec{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--ink);font-weight:600;margin:3rem 0 1rem;
